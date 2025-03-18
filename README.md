@@ -10,9 +10,9 @@
 + [x] 提供[utau工程](vocal.mid)以便于生成歌姬配置文件
   <details>
     <summary>使用 midi 的原因</summary>
-    综合考虑下来，还是 midi 的普遍适用性最强，只需导入 midi 然后编辑歌词就行了，歌词如下  
-    <code>mo gu no ka te mo so o ga na ra pa ma ye de ro re to za ba sa ge nya sa ya bi te ha ko a tsu to</code>  
-    当然你也可以使用你想要的歌词，自由发挥吧 xwx
+    <p>综合考虑下来，还是 midi 的普遍适用性最强，只需导入 midi 然后编辑歌词就行了，歌词如下<p>
+    <p><code>mo gu no ka te mo so o ga na ra pa ma ye de ro re to za ba sa ge nya sa ya bi te ha ko a tsu to</code></p>
+    <p>当然你也可以使用你想要的歌词，自由发挥吧 xwx</p>
   </details>
 
 我们的目标是使得不具备任何编程知识、计算机专业知识的用户也可以编辑 Mikutap 的人声、背景音轨等等。
