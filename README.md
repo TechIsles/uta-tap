@@ -2,6 +2,11 @@
 
 一起来制作 Mikutap 页面吧！
 
+## 已部署站点
+
++ Vercel (较快): https://vercel.uta.mrxiaom.top/
++ Github Pages (较慢): https://uta.mrxiaom.top/
+
 ## 这是什么
 
 歌tap (uta-tap) 是可供用户编辑的 Mikutap 二次开发版本，计划做到以下内容
@@ -19,7 +24,7 @@
 
 ## 用法
 
-到 [data](https://github.com/MrXiaoM/uta-tap/tree/main/data) 目录下载示例的音轨或者歌姬配置文件，根据文档进行编辑，最后在 [uta-tap 网页](https://uta.mrxiaom.top/) 的`:选择:`菜单上传自定义配置即可使用。
+到 [data](https://github.com/MrXiaoM/uta-tap/tree/main/data) 目录下载示例的音轨或者歌姬配置文件，根据文档进行编辑，最后在 [uta-tap 网页](https://vercel.uta.mrxiaom.top/) 的`:选择:`菜单上传自定义配置即可使用。
 
 站点是静态网页，一切操作均在你的浏览器进行，不会上传到互联网。
 
