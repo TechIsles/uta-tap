@@ -4,9 +4,10 @@
 
 ## 已部署站点
 
-+ 腾讯云 EdgeOne: https://uta-tap.edgeone.app/
++ Cloudflare Pages: https://uta-tap.pages.dev/
 + Vercel (较快): https://vercel.uta.mrxiaom.top/
 + Github Pages (较慢): https://uta.mrxiaom.top/
++ EdgeOne (仅供海外): https://uta-tap.edgeone.app/
 
 ## 这是什么
 
