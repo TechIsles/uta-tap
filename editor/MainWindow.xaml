@@ -33,6 +33,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0" VerticalAlignment="Top" Margin="0,0,0,5">
                     <Grid.ColumnDefinitions>
@@ -47,7 +48,9 @@
                     <Button Grid.Column="3" Width="25" Height="20" Margin="5,0,0,0" Click="DelMedia_Click">-</Button>
                 </Grid>
                 <ListView x:Name="MediaList" Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionChanged="MediaList_SelectionChanged" KeyDown="MediaList_KeyDown" />
-
+                <Grid Grid.Row="2" Margin="0,5,0,0">
+                    <CheckBox Name="CheckPreviewMedia" IsChecked="True">点击资源时试听</CheckBox>
+                </Grid>
             </Grid>
             <Grid x:Name="PageContainer" Grid.Column="1" Margin="10,0,0,0">
                 <Grid>

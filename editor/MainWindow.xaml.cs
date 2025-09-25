@@ -347,10 +347,13 @@ namespace editor
 
         private void OnClickItem(ListViewItem item)
         {
-            var selected = item.Tag?.ToString();
-            if (selected != null)
+            if (CheckPreviewMedia.IsChecked == true)
             {
-                PlayAudio(selected);
+                var selected = item.Tag?.ToString();
+                if (selected != null)
+                {
+                    PlayAudio(selected);
+                }
             }
         }
 
