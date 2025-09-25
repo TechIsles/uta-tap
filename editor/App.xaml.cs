@@ -9,6 +9,7 @@ namespace editor
     /// </summary>
     public partial class App : Application
     {
+        public static readonly Version VERSION = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
     }
 
 }

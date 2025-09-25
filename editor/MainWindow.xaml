@@ -13,16 +13,16 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Menu>
-            <MenuItem Header="文件">
-                <MenuItem Header="打开" Click="MenuFileOpen_Click"/>
-                <MenuItem Header="保存" Click="MenuFileSave_Click"/>
-                <MenuItem Header="另存为" Click="MenuFileSaveAs_Click"/>
+            <MenuItem Header="文件 (_F)">
+                <MenuItem Header="打开 (_O)" Click="MenuFileOpen_Click"/>
+                <MenuItem Header="保存 (_S)" Click="MenuFileSave_Click"/>
+                <MenuItem Header="另存为 (_A)" Click="MenuFileSaveAs_Click"/>
                 <Separator/>
-                <MenuItem Header="查看 JSON" Click="MenuFileJson_Click"/>
+                <MenuItem Header="查看 JSON (_C)" Click="MenuFileJson_Click"/>
                 <Separator/>
-                <MenuItem Header="退出" Click="MenuFileExit_Click"/>
+                <MenuItem Header="退出 (_E)" Click="MenuFileExit_Click"/>
             </MenuItem>
-            <MenuItem Header="关于" />
+            <MenuItem Header="关于 (_A)" Click="MenuAbout_Click" />
         </Menu>
         <Grid Grid.Row="1" Margin="10,5,10,10">
             <Grid.ColumnDefinitions>

@@ -1,6 +1,7 @@
 ﻿using CsharpJson;
 using Microsoft.Win32;
 using NAudio.Wave;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -267,6 +268,24 @@ namespace editor
             if (CheckSafeToExit())
             {
                 Close();
+            }
+        }
+
+        private void MenuAbout_Click(object sender, RoutedEventArgs e)
+        {
+            var title = "关于";
+            var url = "https://github.com/MrXiaoM/uta-tap";
+            var desc = string.Join("\n", [
+                "uta-tap Editor",
+                $"版本 - {App.VERSION}",
+                "作者 - MrXiaoM",
+                "",
+                "是否查看开源地址？",
+                url
+            ]);
+            if (MessageBox.Show(desc, title, MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+            {
+                Process.Start("explorer", url);
             }
         }
 
