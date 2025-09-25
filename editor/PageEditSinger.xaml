@@ -3,11 +3,30 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:editor"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800">
+      xmlns:local="clr-namespace:editor" xmlns:xc="http://schemas.xceed.com/wpf/xaml/toolkit"
+      mc:Ignorable="d" Background="#FFFFFF"
+      d:DesignHeight="400" d:DesignWidth="600">
 
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,5,0,0" FontSize="20">音量调整</TextBlock>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10">
+                <TextBlock VerticalAlignment="Center">将</TextBlock>
+                <TextBlock Name="TextMediaName" VerticalAlignment="Center" Margin="5,0,5,0" Background="#EFEFEF" Padding="5,0,5,0">(未选中资源)</TextBlock>
+                <TextBlock VerticalAlignment="Center">的音量调整为</TextBlock>
+                <xc:DecimalUpDown VerticalAlignment="Center" FormatString="F2" Increment="0.1" Minimum="0" Maximum="10" Name="InputVolume" Margin="5,0,5,0" Value="1" Width="64" IsEnabled="False"></xc:DecimalUpDown>
+                <TextBlock VerticalAlignment="Center">倍</TextBlock>
+                <Button Name="ButtonSaveVolume" Margin="10,0,0,0" Width="50" IsEnabled="False" Click="ButtonSaveVolume_Click">确定</Button>
+            </StackPanel>
+        </Grid>
     </Grid>
 </local:EditorPage>

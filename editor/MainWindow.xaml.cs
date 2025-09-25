@@ -14,6 +14,10 @@ namespace editor
     public class EditorPage : UserControl
     {
         public event EventHandler<string> OnSelectedMediaChanged;
+        public void OnSelectedMediaChangedInvoke(string media)
+        {
+            OnSelectedMediaChanged?.Invoke(this, media);
+        }
     }
     public partial class MainWindow : Window
     {
@@ -25,7 +29,7 @@ namespace editor
         EditorPage page;
         Encoding UTF8 = new UTF8Encoding(false);
         string openFileName;
-        JsonObject json = new JsonObject();
+        public JsonObject json = new JsonObject();
         Dictionary<string, byte[]> loadedMedias = new Dictionary<string, byte[]>();
         bool hasEdit = false;
         public MainWindow()
@@ -35,6 +39,15 @@ namespace editor
             Title = windowTitle;
             json["media"] = new JsonObject();
             json["volume"] = new JsonObject();
+        }
+
+        public void MarkEdit()
+        {
+            hasEdit = true;
+            if (!Title.EndsWith('*'))
+            {
+                Title += "*";
+            }
         }
 
         private async void ReplaceMedia_Click(object sender, RoutedEventArgs e)
@@ -164,6 +177,10 @@ namespace editor
             {
                 try
                 {
+                    if (page != null)
+                    {
+                        page.OnSelectedMediaChangedInvoke(null);
+                    }
                     openFileName = ofd.FileName;
                     string jsonText = await File.ReadAllTextAsync(openFileName, UTF8);
                     json = JsonDocument.FromString(jsonText).Object;
@@ -253,7 +270,7 @@ namespace editor
         {
             try
             {
-                File.WriteAllTextAsync(fileName, SaveToJson(), UTF8).Start();
+                File.WriteAllText(fileName, SaveToJson(), UTF8);
             }
             catch (Exception ex)
             {
@@ -311,10 +328,19 @@ namespace editor
             {
                 ButtonReplaceMedia.IsEnabled = true;
                 OnClickItem(item);
+                var selected = item.Tag?.ToString();
+                if (selected != null && page != null)
+                {
+                    page.OnSelectedMediaChangedInvoke(selected);
+                }
             }
             else
             {
                 ButtonReplaceMedia.IsEnabled = false;
+                if (page != null)
+                {
+                    page.OnSelectedMediaChangedInvoke(null);
+                }
             }
         }
 

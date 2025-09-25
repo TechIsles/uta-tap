@@ -28,6 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="PageEditSinger.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="PageEditTracks.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
