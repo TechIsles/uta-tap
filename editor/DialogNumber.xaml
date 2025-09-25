@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:editor" xmlns:xc="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow" ResizeMode="CanMinimize"
-        Title="确定资源名称" Height="200" Width="250">
+        Title="确定资源名称" Height="200" Width="250" MinHeight="200" MinWidth="250">
     <Grid>
         <Grid Margin="20,15,20,10">
             <Grid.RowDefinitions>

@@ -6,6 +6,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <RepositoryUrl>https://github.com/MrXiaoM/uta-tap</RepositoryUrl>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
+    <Copyright>© MrXiaoM 2025-present 保留所有权利</Copyright>
+    <Company>MrXiaoM</Company>
+    <Authors>MrXiaoM</Authors>
+    <Product>uta-tap Editor</Product>
+    <PackageProjectUrl>https://github.com/MrXiaoM/uta-tap</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +25,12 @@
   <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit" Version="5.0.0" />
     <PackageReference Include="NAudio" Version="2.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="PageEditTracks.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
 </Project>

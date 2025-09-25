@@ -10,13 +10,17 @@ using System.Windows.Media.Imaging;
 
 namespace editor
 {
-    public class EditorPage : Page
+    public class EditorPage : UserControl
     {
         public event EventHandler<string> OnSelectedMediaChanged;
     }
     public partial class MainWindow : Window
     {
-        private string windowTitle = "uta-tap Editor";
+        private System.Text.Json.JsonSerializerOptions jsonSerializerOptions = new System.Text.Json.JsonSerializerOptions
+        {
+            WriteIndented = true,
+        };
+        private string windowTitle = "[ uta-tap Editor ]";
         EditorPage page;
         Encoding UTF8 = new UTF8Encoding(false);
         string openFileName;
@@ -185,8 +189,7 @@ namespace editor
                     PageContainer.Children.Clear();
                     if (json.ContainsKey("tracks"))
                     {
-                        // TODO: PageEditTracks
-                        page = new PageEditSinger(this);
+                        page = new PageEditTracks(this);
                     }
                     else
                     {
@@ -204,13 +207,16 @@ namespace editor
         }
         private void AddMedia(string name, byte[] audio)
         {
-            var listBoxItem = new ListBoxItem()
+            var item = new ListViewItem()
             {
                 Content = name,
                 Tag = name,
             };
-            listBoxItem.PreviewMouseLeftButtonDown += MediaList_MouseLeftButtonDown;
-            MediaList.Items.Add(listBoxItem);
+            item.PreviewMouseLeftButtonDown += (sender, e) =>
+            {
+                if (item.IsSelected) OnClickItem(item);
+            };
+            MediaList.Items.Add(item);
             loadedMedias[name] = audio;
         }
         private void MenuFileSave_Click(object sender, RoutedEventArgs e)
@@ -232,12 +238,21 @@ namespace editor
                 SaveTo(sfd.FileName);
             }
         }
+        private void MenuFileJson_Click(object sender, RoutedEventArgs e)
+        {
+            new DialogDisplayJson(SaveToJson()).ShowDialog();
+        }
+        private string SaveToJson()
+        {
+            var doc = JsonDocument.ToJsonString(json);
+            var obj = System.Text.Json.JsonSerializer.Deserialize<object>(doc);
+            return System.Text.Json.JsonSerializer.Serialize(obj, jsonSerializerOptions);
+        }
         private void SaveTo(string fileName)
         {
             try
             {
-                var doc = JsonDocument.ToJsonString(json);
-                File.WriteAllTextAsync(fileName, doc, UTF8).Start();
+                File.WriteAllTextAsync(fileName, SaveToJson(), UTF8).Start();
             }
             catch (Exception ex)
             {
@@ -273,10 +288,10 @@ namespace editor
 
         private void MediaList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var selected = MediaList.SelectedItem?.ToString();
-            if (selected != null)
+            if (MediaList.SelectedItem is ListViewItem item)
             {
                 ButtonReplaceMedia.IsEnabled = true;
+                OnClickItem(item);
             }
             else
             {
@@ -284,27 +299,31 @@ namespace editor
             }
         }
 
-        private void MediaList_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void OnClickItem(ListViewItem item)
         {
-            if (sender is ListBoxItem item)
+            var selected = item.Tag?.ToString();
+            if (selected != null)
             {
-                var selected = item.Tag?.ToString();
-                if (selected == null) return;
-                if (loadedMedias.TryGetValue(selected, out byte[] audio))
+                PlayAudio(selected);
+            }
+        }
+
+        public void PlayAudio(string name)
+        {
+            if (loadedMedias.TryGetValue(name, out byte[] audio))
+            {
+                Dispatcher.InvokeAsync(async () =>
                 {
-                    Dispatcher.InvokeAsync(async () =>
+                    using var memoryStream = new MemoryStream(audio);
+                    using var reader = new Mp3FileReader(memoryStream);
+                    using var waveOut = new WaveOutEvent();
+                    waveOut.Init(reader);
+                    waveOut.Play();
+                    while (waveOut.PlaybackState == PlaybackState.Playing)
                     {
-                        using var memoryStream = new MemoryStream(audio);
-                        using var reader = new Mp3FileReader(memoryStream);
-                        using var waveOut = new WaveOutEvent();
-                        waveOut.Init(reader);
-                        waveOut.Play();
-                        while (waveOut.PlaybackState == PlaybackState.Playing)
-                        {
-                            await Task.Delay(100);
-                        }
-                    });
-                }
+                        await Task.Delay(100);
+                    }
+                });
             }
         }
 
@@ -344,6 +363,17 @@ namespace editor
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Activate();
+        }
+
+        private void MediaList_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter || e.Key == Key.Right || e.Key == Key.Left)
+            {
+                if (MediaList.SelectedItem is ListViewItem item)
+                {
+                    OnClickItem(item);
+                }
+            }
         }
     }
 }
