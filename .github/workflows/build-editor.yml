@@ -1,0 +1,43 @@
+name: Build Editor
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  TZ: Asia/Shanghai
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Setup MSBuild.exe
+        uses: microsoft/setup-msbuild@v2
+      - name: Publish to folder
+        run: |
+          cd editor
+          dotnet publish editor.csproj -c Debug -f net8.0-windows -r win-x64 --sc false -o ./publish -p:Platform=x64 -p:PublishSingleFile=true
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: editor
+          path: editor/publish/*
