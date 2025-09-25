@@ -166,6 +166,7 @@ namespace editor
         }
         private async void MenuFileOpen_Click(object sender, RoutedEventArgs e)
         {
+            if (CheckSafeToExit() == false) return;
             var ofd = new OpenFileDialog() {
                 Title = "打开音轨/歌姬文件",
                 Filter = "JSON文件 (*.json)|*.json",
