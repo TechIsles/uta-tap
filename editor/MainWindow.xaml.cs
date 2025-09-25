@@ -194,8 +194,8 @@ namespace editor
                         MessageBox.Show("文件格式错误，无法在 JSON 中找到 media", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
-                    MediaList_SelectionChanged(null, null);
                     loadedMedias.Clear();
+                    MediaList_SelectionChanged(null, null);
                     MediaList.Items.Clear();
                     var media = json["media"].ToObject();
                     foreach (var item in media.Keys)
