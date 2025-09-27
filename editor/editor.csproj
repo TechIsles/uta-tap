@@ -38,13 +38,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="PageHome.xaml.cs">
+    <Compile Update="Page\PageHome.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="PageEditSinger.xaml.cs">
+    <Compile Update="Page\PageEditSinger.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="PageEditTracks.xaml.cs">
+    <Compile Update="Page\PageEditTracks.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
