@@ -13,7 +13,7 @@
 
 歌tap (uta-tap) 是可供用户编辑的 Mikutap 二次开发版本，计划做到以下内容
 + [x] 可载入自定义配置文件
-+ [ ] 提供背景音轨可视化编辑器（由于越写越复杂，再写下去就要变成一个小 DAW 了，可能不会计划编写了）
++ [x] 提供背景音轨[可视化编辑器](https://github.com/MrXiaoM/uta-tap/releases/latest)
 + [x] 提供[utau工程](vocal.mid)以便于生成歌姬配置文件
   <details>
     <summary>使用 midi 的原因</summary>
@@ -23,6 +23,9 @@
   </details>
 
 我们的目标是使得不具备任何编程知识、计算机专业知识的用户也可以编辑 Mikutap 的人声、背景音轨等等。
+
+![](https://pic1.imgdb.cn/item/68d7dd04c5157e1a883d0343.png)  
+![](https://pic1.imgdb.cn/item/68d7dd02c5157e1a883d0336.png)
 
 ## 用法
 
