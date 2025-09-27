@@ -71,7 +71,7 @@ namespace editor
                 Content = "循环",
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(0, 0, 10, 0),
+                Margin = new Thickness(0, 0, 4, 0),
                 IsChecked = loop,
             };
             Grid.SetColumn(check, 1);
@@ -127,6 +127,7 @@ namespace editor
                 if (notes[noteIndex] != -1)
                 {
                     SetNote(noteIndex, -1);
+                    RefreshBackgroundColor();
                     parent.SaveTracks();
                     parent.mainWindow.MarkEdit();
                 }
@@ -163,15 +164,18 @@ namespace editor
 
         public void RefreshBackgroundColor()
         {
+            var changed = false;
             var lastRealNote = notes.Count - 1;
             for (int index = lastRealNote; index >= 0; index--)
             {
                 if (notes[index] > -1)
                 {
                     lastRealNote = index;
+                    changed = true;
                     break;
                 }
             }
+            if (!changed) lastRealNote = -1;
             for (int i = 0; i < noteGrids.Count; i++)
             {
                 var grid = noteGrids[i];
@@ -198,15 +202,18 @@ namespace editor
             obj["comment"] = comment;
             obj["loop"] = loop;
 
+            var changed = false;
             var lastRealNote = this.notes.Count - 1;
             for (int index = lastRealNote; index >= 0; index--)
             {
                 if (this.notes[index] > -1)
                 {
                     lastRealNote = index;
+                    changed = true;
                     break;
                 }
             }
+            if (!changed) lastRealNote = -1;
             var notes = new JsonArray();
             for (int i = 0; i <= lastRealNote; i++)
             {
@@ -314,16 +321,18 @@ namespace editor
             int max = 32;
             foreach (var item in tracks)
             {
+                var changed = false;
                 var realNoteLength = item.notes.Count;
                 for (int index = realNoteLength - 1; index >= 0; index--)
                 {
                     if (item.notes[index] > -1)
                     {
                         realNoteLength = index + 1;
+                        changed = true;
                         break;
                     }
                 }
-                if (realNoteLength > max)
+                if (changed && realNoteLength > max)
                 {
                     max = realNoteLength;
                 }
