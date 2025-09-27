@@ -33,7 +33,6 @@ namespace editor
             {
                 Margin = new Thickness(0, 2, 0, 2),
                 Height = 20,
-                Background = hex(index % 2 == 1 ? "#EAEAEA" : "#EFEFEF"),
             };
             this.left.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
             this.left.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
@@ -47,13 +46,14 @@ namespace editor
             Grid.SetColumn(textTrackName, 0);
             this.left.Children.Add(textTrackName);
             this.left.Children.Add(GenerateCheckBox());
+            SetupLeftContextMenu(this.left, textTrackName);
             this.right = new StackPanel()
             {
                 Orientation = Orientation.Horizontal,
                 Margin = new Thickness(1, 2, 1, 2),
                 Height = 20,
-                Background = hex(index % 2 == 1 ? "#7B7B7B" : "#808080")
             };
+            UpdateBackgroundByIndex(index);
 
             for (int i = 0; i < notes.Count; i++)
             {
@@ -62,6 +62,43 @@ namespace editor
 
             left.Children.Insert(index, this.left);
             right.Children.Insert(index, this.right);
+        }
+
+        public void UpdateBackgroundByIndex(int index)
+        {
+            left.Background = hex(index % 2 == 1 ? "#EAEAEA" : "#EFEFEF");
+            right.Background = hex(index % 2 == 1 ? "#7B7B7B" : "#808080");
+        }
+
+        private void SetupLeftContextMenu(Grid grid, TextBlock textTrackName)
+        {
+            var ctx = new ContextMenu();
+            var itemRename = new MenuItem() { Header = "重命名" };
+            itemRename.Click += (s, e) =>
+            {
+                var dialog = new DialogTrackRename(comment);
+                if (dialog.ShowDialog() == true)
+                {
+                    comment = dialog.TrackName;
+                    textTrackName.Text = comment;
+                    parent.mainWindow.MarkEdit();
+                }
+            };
+            var itemDelete = new MenuItem() { Header = "删除音轨" };
+            itemDelete.Click += (s, e) =>
+            {
+                var title = "警告";
+                var desc = $"你真的要删除音轨 {comment} 吗？\n这个音轨将会永久消失！（真的很久）";
+                if (MessageBox.Show(desc, title, MessageBoxButton.YesNo, MessageBoxImage.Hand) == MessageBoxResult.Yes)
+                {
+                    parent.DeleteTrack(this);
+                    parent.mainWindow.MarkEdit();
+                }
+            };
+            ctx.Items.Add(itemRename);
+            ctx.Items.Add(new Separator());
+            ctx.Items.Add(itemDelete);
+            grid.ContextMenu = ctx;
         }
 
         private CheckBox GenerateCheckBox()
@@ -290,6 +327,18 @@ namespace editor
                 AddTrack(i, comment, loop, notes);
             }
             FillTracksNotes();
+        }
+
+        public void DeleteTrack(MusicTrack targetTrack)
+        {
+            tracks.Remove(targetTrack);
+            ScrollLeftContent.Children.Remove(targetTrack.left);
+            ScrollRightContent.Children.Remove(targetTrack.right);
+            for (int i = 0; i < tracks.Count; i++)
+            {
+                var track = tracks[i];
+                track.UpdateBackgroundByIndex(i);
+            }
         }
 
         public void AddTrack(int index, string comment, bool loop, List<int> notes)
