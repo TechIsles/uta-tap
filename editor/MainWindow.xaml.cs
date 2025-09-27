@@ -98,42 +98,47 @@ namespace editor
 
         private async void ReplaceMedia_Click(object sender, RoutedEventArgs e)
         {
-            if (MediaList.SelectedItem is ListBoxItem item)
+            if (MediaList.SelectedItem is ListViewItem item)
             {
                 var selected = item.Tag?.ToString();
                 if (selected == null) return;
-                var ofd = new OpenFileDialog()
-                {
-                    Title = "选择一个音频文件进行替换",
-                    Filter = "音频文件 (*.mp3)|*.mp3",
-                    Multiselect = false,
-                    CheckFileExists = true,
-                    CheckPathExists = true,
-                };
-                if (ofd.ShowDialog() == true)
-                {
-                    try
-                    {
-                        byte[] audio = await File.ReadAllBytesAsync(ofd.FileName);
-                        string base64Audio = "data:audio/mp3;base64," + Convert.ToBase64String(audio);
-                        json["media"].ToObject()[selected] = base64Audio;
-                        loadedMedias[selected] = audio;
-                        await Dispatcher.InvokeAsync(() => PreloadMedia(audio));
-                        MessageBox.Show("已替换资源文件 " + selected);
-                    }
-                    catch (Exception ex)
-                    {
-                        var title = "错误";
-                        var desc = "打开文件失败：" + ex.Message;
-                        MessageBox.Show(desc, title, MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                }
+                await ReplaceMedia(selected);
             }
             else
             {
                 var title = "错误";
                 var desc = "请先选择一个待替换的资源文件";
                 MessageBox.Show(desc, title, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async Task ReplaceMedia(string selected)
+        {
+            var ofd = new OpenFileDialog()
+            {
+                Title = "选择一个音频文件进行替换",
+                Filter = "音频文件 (*.mp3)|*.mp3",
+                Multiselect = false,
+                CheckFileExists = true,
+                CheckPathExists = true,
+            };
+            if (ofd.ShowDialog() == true)
+            {
+                try
+                {
+                    byte[] audio = await File.ReadAllBytesAsync(ofd.FileName);
+                    string base64Audio = "data:audio/mp3;base64," + Convert.ToBase64String(audio);
+                    json["media"].ToObject()[selected] = base64Audio;
+                    loadedMedias[selected] = audio;
+                    await Dispatcher.InvokeAsync(() => PreloadMedia(audio));
+                    MessageBox.Show("已替换资源文件 " + selected);
+                }
+                catch (Exception ex)
+                {
+                    var title = "错误";
+                    var desc = "打开文件失败：" + ex.Message;
+                    MessageBox.Show(desc, title, MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
         private async void AddMedia_Click(object sender, RoutedEventArgs e)
@@ -192,19 +197,11 @@ namespace editor
         private void DelMedia_Click(object sender, RoutedEventArgs e)
         {
             if (openFileName == null) return;
-            if (MediaList.SelectedItem is ListBoxItem item)
+            if (MediaList.SelectedItem is ListViewItem item)
             {
                 var selected = item.Tag?.ToString();
                 if (selected == null) return;
-                var title = "提示";
-                var desc = "你确定要删除 " + selected + " 吗？";
-                if (MessageBox.Show(desc, title, MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
-                {
-                    MediaList.Items.Remove(item);
-                    json["media"].ToObject().Remove(selected);
-                    loadedMedias.Remove(selected);
-                    MessageBox.Show("已删除资源文件 " + selected);
-                }
+                DeleteMedia(selected, item);
             }
             else
             {
@@ -213,6 +210,20 @@ namespace editor
                 MessageBox.Show(desc, title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private void DeleteMedia(string selected, ListViewItem item)
+        {
+            var title = "提示";
+            var desc = "你确定要删除 " + selected + " 吗？";
+            if (MessageBox.Show(desc, title, MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+            {
+                MediaList.Items.Remove(item);
+                json["media"].ToObject().Remove(selected);
+                loadedMedias.Remove(selected);
+                MessageBox.Show("已删除资源文件 " + selected);
+            }
+        }
+
         private async void MenuFileOpen_Click(object sender, RoutedEventArgs e)
         {
             if (CheckSafeToExit() == false) return;
@@ -297,6 +308,46 @@ namespace editor
                 Content = name,
                 Tag = name,
             };
+            var ctx = new ContextMenu();
+            var menuExport = new MenuItem() { Header = "导出音频文件" };
+            menuExport.Click += (sender, e) => {
+                var sfd = new SaveFileDialog
+                {
+                    Title = "导出音频文件",
+                    Filter = "MP3文件 (*.mp3)|*.mp3",
+                    OverwritePrompt = true,
+                    AddExtension = true,
+                    DefaultExt = ".mp3",
+                    FileName = name
+                };
+                if (sfd.ShowDialog() == true)
+                {
+                    try
+                    {
+                        File.WriteAllBytes(sfd.FileName, loadedMedias[name]);
+                        MessageBox.Show("已导出音频文件 " + sfd.FileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        var title = "错误";
+                        var desc = "导出文件失败：" + ex.Message;
+                        MessageBox.Show(desc, title, MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            };
+            ctx.Items.Add(menuExport);
+
+            var menuReplace = new MenuItem() { Header = "替换" };
+            menuReplace.Click += async (sender, e) => await ReplaceMedia(name);
+            ctx.Items.Add(menuReplace);
+
+            ctx.Items.Add(new Separator());
+
+            var menuDelete = new MenuItem() { Header = "删除" };
+            menuDelete.Click += (sender, e) => DeleteMedia(name, item);            
+            ctx.Items.Add(menuDelete);
+
+            item.ContextMenu = ctx;
             item.PreviewMouseLeftButtonDown += (sender, e) =>
             {
                 if (item.IsSelected)
