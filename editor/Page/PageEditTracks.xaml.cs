@@ -629,6 +629,22 @@ namespace editor
             previewGapMills = 60000.0 / value / 2.0;
             UpdatePreviewTime();
             if (oldBPM?.IsNumber() == true && oldBPM.ToDouble() == value) return;
+            if (IsPlaying)
+            {
+                // 如果 BPM 急剧变小，则停止播放。
+                // 否则可能会出现一分钟播放一次的情况 (BPM=1)
+                double oldValue = e.OldValue == null ? 0 : Convert.ToDouble(e.OldValue);
+                double newValue = e.NewValue == null ? 120 : Convert.ToDouble(e.NewValue);
+                if (Math.Abs(newValue - oldValue) >= 10 && newValue < 60)
+                {
+                    IsPlaying = false;
+                    if (previewTimer != null)
+                    {
+                        previewTimer.Stop();
+                        previewTimer = null;
+                    }
+                }
+            }
             mainWindow.json["bpm"] = value;
             mainWindow.MarkEdit();
         }
