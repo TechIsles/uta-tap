@@ -42,7 +42,7 @@
 
             <Grid Grid.Row="2" Grid.ColumnSpan="2">
                 <TextBlock Margin="10">
-                    [左键] 选择音符 | [右键] 清空音符 <LineBreak/>
+                    <Bold>[左键]</Bold> 选择音符 | <Bold>[右键]</Bold> 清空音符 <LineBreak/>
                     选择音符后，点击左侧资源列表即可替换音符
                 </TextBlock>
             </Grid>
