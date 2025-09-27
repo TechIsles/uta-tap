@@ -30,8 +30,7 @@ namespace editor
             this.notes = notes;
             this.left = new Grid()
             {
-                Margin = new Thickness(0, 2, 0, 2),
-                Height = 20,
+                Height = 24,
             };
             this.left.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
             this.left.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
@@ -40,7 +39,7 @@ namespace editor
                 Text = comment,
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Left,
-                Margin = new Thickness(4, 0, 0, 0),
+                Margin = new Thickness(4, 2, 0, 2),
             };
             Grid.SetColumn(textTrackName, 0);
             this.left.Children.Add(textTrackName);
@@ -49,8 +48,8 @@ namespace editor
             this.right = new StackPanel()
             {
                 Orientation = Orientation.Horizontal,
-                Margin = new Thickness(1, 2, 1, 2),
-                Height = 20,
+                Margin = new Thickness(1, 0, 1, 0),
+                Height = 24,
             };
             UpdateBackgroundByIndex(index);
 
@@ -137,7 +136,7 @@ namespace editor
                 Tag = noteIndex,
                 Width = 25,
                 Height = 20,
-                Margin = new Thickness(1, 0, 1, 0),
+                Margin = new Thickness(1, 2, 1, 2),
                 Background = hex("#60EFEFEF"),
                 Cursor = Cursors.Hand,
             };
