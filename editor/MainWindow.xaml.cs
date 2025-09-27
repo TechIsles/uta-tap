@@ -49,10 +49,6 @@ namespace editor
         public MainWindow()
         {
             instance = this;
-            // 播放一次示例音频 (808 鼓机的 hihat)，避免第一次播放时出现卡顿
-            string name = Assembly.GetExecutingAssembly().GetName().Name + ".sample.mp3";
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            PreloadMedia(assembly.GetManifestResourceStream(name));
             InitializeComponent();
             Icon = new BitmapImage(new Uri("pack://application:,,,/editor;component/favicon.ico", UriKind.Absolute));
             RefreshTitle();
