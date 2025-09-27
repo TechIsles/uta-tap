@@ -605,6 +605,7 @@ namespace editor
             IsPlaying = !IsPlaying;
             if (IsPlaying)
             {
+                PlayPreviewFrame(previewProgress % previewLength);
                 previewThread = new Thread(() =>
                 {
                     var stopwatch = new Stopwatch();
