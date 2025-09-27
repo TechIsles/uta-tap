@@ -25,19 +25,27 @@ namespace editor
         {
             this.parent = parent;
             this.onSelected = onSelected;
+            this.comment = comment;
+            this.loop = loop;
+            this.notes = notes;
             this.left = new Grid()
             {
                 Margin = new Thickness(0, 2, 0, 2),
                 Height = 20,
-                Background = hex(index % 2 == 1 ? "#EAEAEA" : "#EFEFEF")
+                Background = hex(index % 2 == 1 ? "#EAEAEA" : "#EFEFEF"),
             };
-            this.left.Children.Add(new TextBlock()
+            this.left.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
+            this.left.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
+            var textTrackName = new TextBlock()
             {
                 Text = comment,
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 Margin = new Thickness(4, 0, 0, 0),
-            });
+            };
+            Grid.SetColumn(textTrackName, 0);
+            this.left.Children.Add(textTrackName);
+            this.left.Children.Add(GenerateCheckBox());
             this.right = new StackPanel()
             {
                 Orientation = Orientation.Horizontal,
@@ -45,9 +53,6 @@ namespace editor
                 Height = 20,
                 Background = hex(index % 2 == 1 ? "#7B7B7B" : "#808080")
             };
-            this.comment = comment;
-            this.loop = loop;
-            this.notes = notes;
 
             for (int i = 0; i < notes.Count; i++)
             {
@@ -56,6 +61,38 @@ namespace editor
 
             left.Children.Insert(index, this.left);
             right.Children.Insert(index, this.right);
+        }
+
+        private CheckBox GenerateCheckBox()
+        {
+            var check = new CheckBox()
+            {
+                Content = "循环",
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 0, 10, 0),
+                IsChecked = loop,
+            };
+            Grid.SetColumn(check, 1);
+            check.Checked += (o, e) =>
+            {
+                if (!this.loop)
+                {
+                    this.loop = true;
+                    parent.SaveTracks();
+                    parent.mainWindow.MarkEdit();
+                }
+            };
+            check.Unchecked += (o, e) =>
+            {
+                if (this.loop)
+                {
+                    this.loop = false;
+                    parent.SaveTracks();
+                    parent.mainWindow.MarkEdit();
+                }
+            };
+            return check;
         }
 
         public void AddNoteGrid(int noteIndex, int note)
