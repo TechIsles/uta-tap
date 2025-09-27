@@ -600,7 +600,7 @@ namespace editor
             SaveTracks();
         }
 
-        private void ButtonPlayPause_Click(object sender, RoutedEventArgs e)
+        public void ButtonPlayPause_Click(object sender, RoutedEventArgs e)
         {
             IsPlaying = !IsPlaying;
             if (IsPlaying)

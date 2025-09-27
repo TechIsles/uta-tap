@@ -654,6 +654,11 @@ namespace editor
                 MenuFileOpen_Click(null, null);
                 e.Handled = true;
             }
+            else if (e.Key == Key.Space && page is PageEditTracks p)
+            {
+                p.ButtonPlayPause_Click(null, null);
+                e.Handled = true;
+            }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
