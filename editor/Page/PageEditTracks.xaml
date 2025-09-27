@@ -21,7 +21,15 @@
                 <ColumnDefinition Width="Auto" MinWidth="128"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,0,0,5" FontSize="20">音轨列表</TextBlock>
+            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Path Grid.Column="0" VerticalAlignment="Center" Data="M470.36 1.51l-112 35.38A32 32 0 0 0 336 67.36v299.12c-18.16-9.07-40.16-14.48-64-14.48-61.86 0-112 35.82-112 80s50.14 80 112 80 112-35.82 112-80V195.36L489.64 162A32 32 0 0 0 512 131.48V32a32 32 0 0 0-41.64-30.49zM272 464c-39.7 0-64-20.72-64-32s24.3-32 64-32 64 20.72 64 32-24.3 32-64 32zm192-344.25L384 145V79.12l80-25.26zM16 104h256a16 16 0 0 0 16-16V72a16 16 0 0 0-16-16H16A16 16 0 0 0 0 72v16a16 16 0 0 0 16 16zm0 128h256a16 16 0 0 0 16-16v-16a16 16 0 0 0-16-16H16a16 16 0 0 0-16 16v16a16 16 0 0 0 16 16zm144 96a16 16 0 0 0-16-16H16a16 16 0 0 0-16 16v16a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16z"
+                        Fill="Black" Width="24" Height="24" Stretch="Uniform" Margin="0,0,5,0"/>
+                <TextBlock Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Center" FontSize="20">音轨列表</TextBlock>
+            </Grid>
             <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -61,19 +69,21 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <Button Name="ButtonPlayPause" Width="25" Height="25" VerticalAlignment="Center" Click="ButtonPlayPause_Click">
+                    <Button Name="ButtonPlayPause" Width="30" Height="30" VerticalAlignment="Center" Click="ButtonPlayPause_Click">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="Content">
                                     <Setter.Value>
-                                        <Path Data="M5,3 L14,8 L5,13 Z" Fill="Black" Stretch="Uniform" Margin="4"/>
+                                        <Path Data="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z"
+                                              Fill="Black" Stretch="Uniform" Margin="4"/>
                                     </Setter.Value>
                                 </Setter>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsPlaying}" Value="True">
                                         <Setter Property="Content">
                                             <Setter.Value>
-                                                <Path Data="M4,3 L7,3 L7,13 L4,13 Z M10,3 L13,3 L13,13 L10,13 Z" Fill="Black" Stretch="Uniform" Margin="5"/>
+                                                <Path Data="M144 479H48c-26.5 0-48-21.5-48-48V79c0-26.5 21.5-48 48-48h96c26.5 0 48 21.5 48 48v352c0 26.5-21.5 48-48 48zm304-48V79c0-26.5-21.5-48-48-48h-96c-26.5 0-48 21.5-48 48v352c0 26.5 21.5 48 48 48h96c26.5 0 48-21.5 48-48z"
+                                                      Fill="Black" Stretch="Uniform" Margin="5"/>
                                             </Setter.Value>
                                         </Setter>
                                     </DataTrigger>
@@ -95,7 +105,15 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,5,0,0" FontSize="20">音量调整</TextBlock>
+            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,5,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Path Grid.Column="0" VerticalAlignment="Center" Data="M394.23 100.85c-11.19-7.09-26.03-3.8-33.12 7.41s-3.78 26.03 7.41 33.12C408.27 166.6 432 209.44 432 256s-23.73 89.41-63.48 114.62c-11.19 7.09-14.5 21.92-7.41 33.12 6.51 10.28 21.12 15.03 33.12 7.41C447.94 377.09 480 319.09 480 256s-32.06-121.09-85.77-155.15zm-56 78.28c-11.58-6.33-26.19-2.16-32.61 9.45-6.39 11.61-2.16 26.2 9.45 32.61C327.98 228.28 336 241.63 336 256c0 14.37-8.02 27.72-20.92 34.81-11.61 6.41-15.84 21-9.45 32.61 6.43 11.66 21.05 15.8 32.61 9.45 28.23-15.55 45.77-45 45.77-76.87s-17.54-61.33-45.78-76.87zM231.81 64c-5.91 0-11.92 2.18-16.78 7.05L126.06 160H24c-13.26 0-24 10.74-24 24v144c0 13.25 10.74 24 24 24h102.06l88.97 88.95c4.87 4.87 10.88 7.05 16.78 7.05 12.33 0 24.19-9.52 24.19-24.02V88.02C256 73.51 244.13 64 231.81 64zM208 366.05L145.94 304H48v-96h97.94L208 145.95v220.1z"
+                    Fill="Black" Width="24" Height="24" Stretch="Uniform" Margin="0,0,5,0"/>
+                <TextBlock Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Center" FontSize="20">音量调整</TextBlock>
+            </Grid>
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10">
                 <TextBlock VerticalAlignment="Center">将</TextBlock>
                 <TextBlock Name="TextMediaName" VerticalAlignment="Center" Margin="5,0,5,0" Background="#EFEFEF" Padding="5,0,5,0">(未选中资源)</TextBlock>
