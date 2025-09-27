@@ -3,6 +3,7 @@ using Microsoft.Win32;
 using NAudio.Wave;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -34,6 +35,17 @@ namespace editor
         bool hasEdit = false;
         public MainWindow()
         {
+            // 播放一次示例音频 (808 鼓机的 hihat)，避免第一次播放时出现卡顿
+            string name = Assembly.GetExecutingAssembly().GetName().Name + ".sample.mp3";
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            using (var stream = assembly.GetManifestResourceStream(name))
+            {
+                using var reader = new Mp3FileReader(stream);
+                using var waveOut = new WaveOutEvent();
+                waveOut.Volume = 0.001f;
+                waveOut.Init(reader);
+                waveOut.Play(); // 由于 stream 的提前关闭，这里不会有声音
+            }
             InitializeComponent();
             Icon = new BitmapImage(new Uri("pack://application:,,,/editor;component/favicon.ico", UriKind.Absolute));
             Title = windowTitle;
@@ -357,7 +369,7 @@ namespace editor
             }
         }
 
-        public void PlayAudio(string name)
+        public void PlayAudio(string name, float volume = 1.0f)
         {
             if (loadedMedias.TryGetValue(name, out byte[] audio))
             {
@@ -366,6 +378,7 @@ namespace editor
                     using var memoryStream = new MemoryStream(audio);
                     using var reader = new Mp3FileReader(memoryStream);
                     using var waveOut = new WaveOutEvent();
+                    waveOut.Volume = volume;
                     waveOut.Init(reader);
                     waveOut.Play();
                     while (waveOut.PlaybackState == PlaybackState.Playing)
