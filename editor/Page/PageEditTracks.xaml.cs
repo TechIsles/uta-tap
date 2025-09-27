@@ -381,8 +381,11 @@ namespace editor
             OnClose += (sender, e) =>
             {
                 IsPlaying = false;
-                previewTimer.Stop();
-                previewTimer = null;
+                if (previewTimer != null)
+                {
+                    previewTimer.Stop();
+                    previewTimer = null;
+                }
             };
             var tracks = mainWindow.json["tracks"]?.ToArray();
             if (tracks != null)
@@ -652,8 +655,11 @@ namespace editor
             }
             else
             {
-                previewTimer.Stop();
-                previewTimer = null;
+                if (previewTimer != null)
+                {
+                    previewTimer.Stop();
+                    previewTimer = null;
+                }
             }
         }
 
