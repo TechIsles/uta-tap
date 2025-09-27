@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Xml.Linq;
 
 namespace editor
 {
@@ -46,19 +47,27 @@ namespace editor
             // 播放一次示例音频 (808 鼓机的 hihat)，避免第一次播放时出现卡顿
             string name = Assembly.GetExecutingAssembly().GetName().Name + ".sample.mp3";
             Assembly assembly = Assembly.GetExecutingAssembly();
-            using (var stream = assembly.GetManifestResourceStream(name))
-            {
-                using var reader = new Mp3FileReader(stream);
-                using var waveOut = new WaveOutEvent();
-                waveOut.Volume = 0.001f;
-                waveOut.Init(reader);
-                waveOut.Play(); // 由于 stream 的提前关闭，这里不会有声音
-            }
+            PreloadMedia(assembly.GetManifestResourceStream(name));
             InitializeComponent();
             Icon = new BitmapImage(new Uri("pack://application:,,,/editor;component/favicon.ico", UriKind.Absolute));
             RefreshTitle();
             json["media"] = new JsonObject();
             json["volume"] = new JsonObject();
+        }
+
+        private static void PreloadMedia(byte[] media)
+        {
+            PreloadMedia(new MemoryStream(media));
+        }
+
+        private static void PreloadMedia(Stream media)
+        {
+            using var stream = media;
+            using var reader = new Mp3FileReader(stream);
+            using var waveOut = new WaveOutEvent();
+            waveOut.Volume = 0.001f;
+            waveOut.Init(reader);
+            waveOut.Play(); // 由于 stream 的提前关闭，这里不会有声音
         }
 
         public void MarkEdit()
@@ -102,6 +111,7 @@ namespace editor
                         string base64Audio = "data:audio/mp3;base64," + Convert.ToBase64String(audio);
                         json["media"].ToObject()[selected] = base64Audio;
                         loadedMedias[selected] = audio;
+                        await Dispatcher.InvokeAsync(() => PreloadMedia(audio));
                         MessageBox.Show("已替换资源文件 " + selected);
                     }
                     catch (Exception ex)
@@ -272,6 +282,7 @@ namespace editor
             };
             MediaList.Items.Add(item);
             loadedMedias[name] = audio;
+            Dispatcher.InvokeAsync(() => PreloadMedia(audio));
         }
         private void MenuFileSave_Click(object sender, RoutedEventArgs e)
         {
