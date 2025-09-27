@@ -645,7 +645,7 @@ namespace editor
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.S && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
+            if (e.Key == Key.S && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             {
                 MenuFileSave_Click(null, null);
                 e.Handled = true;
