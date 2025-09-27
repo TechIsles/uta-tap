@@ -23,8 +23,8 @@
 
 我们的目标是使得不具备任何编程知识、计算机专业知识的用户也可以编辑 Mikutap 的人声、背景音轨等等。
 
-![](https://pic1.imgdb.cn/item/68d7dd04c5157e1a883d0343.png)  
-![](https://pic1.imgdb.cn/item/68d7dd02c5157e1a883d0336.png)
+![](https://pic1.imgdb.cn/item/68d8142ec5157e1a883d3c79.png)  
+![](https://pic1.imgdb.cn/item/68d8142ec5157e1a883d3c7b.png)
 
 ## 用法
 
