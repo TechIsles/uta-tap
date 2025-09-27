@@ -261,6 +261,41 @@ namespace editor
         public readonly float[] volumes = volumes;
     }
 
+    public class TimerWrapper
+    {
+        private Thread thread;
+        private bool stopped = false;
+        public TimerWrapper(Action action, Func<bool> running, Func<double> interval)
+        {
+            thread = new Thread(() =>
+            {
+                var stopwatch = new Stopwatch();
+                while (running() && !stopped)
+                {
+                    stopwatch.Start();
+                    var intervalMills = interval();
+                    while (!stopped && stopwatch.ElapsedMilliseconds < intervalMills) ;
+                    if (!running() || stopped) break;
+                    action();
+                    stopwatch.Stop();
+                    stopwatch.Reset();
+                }
+                stopwatch.Stop();
+            });
+        }
+
+        public void Start()
+        {
+            thread.Start();
+        }
+
+        public void Stop()
+        {
+            stopped = true;
+            thread = null;
+        }
+    }
+
     /// <summary>
     /// PageEditTracks.xaml 的交互逻辑
     /// </summary>
@@ -292,7 +327,7 @@ namespace editor
         private int previewLength;
         private int previewProgress;
         private double previewGapMills;
-        private Thread previewThread;
+        private TimerWrapper previewTimer;
 
         public PageEditTracks(MainWindow mainWindow)
         {
@@ -346,7 +381,8 @@ namespace editor
             OnClose += (sender, e) =>
             {
                 IsPlaying = false;
-                previewThread = null;
+                previewTimer.Stop();
+                previewTimer = null;
             };
             var tracks = mainWindow.json["tracks"]?.ToArray();
             if (tracks != null)
@@ -606,27 +642,18 @@ namespace editor
             if (IsPlaying)
             {
                 PlayPreviewFrame(previewProgress % previewLength);
-                previewThread = new Thread(() =>
+                previewTimer = new TimerWrapper(() =>
                 {
-                    var stopwatch = new Stopwatch();
-                    while (IsPlaying)
-                    {
-                        stopwatch.Start();
-                        while (IsPlaying && stopwatch.ElapsedMilliseconds < previewGapMills);
-                        if (!IsPlaying) break;
-                        previewProgress = (previewProgress + 1) % previewLength;
-                        Dispatcher.Invoke(() => SliderProgress.Value = previewProgress);
-                        Dispatcher.InvokeAsync(() => PlayPreviewFrame(previewProgress));
-                        stopwatch.Stop();
-                        stopwatch.Reset();
-                    }
-                    stopwatch.Stop();
-                });
-                previewThread.Start();
+                    previewProgress = (previewProgress + 1) % previewLength;
+                    Dispatcher.Invoke(() => SliderProgress.Value = previewProgress);
+                    Dispatcher.InvokeAsync(() => PlayPreviewFrame(previewProgress));
+                }, () => IsPlaying, () => previewGapMills);
+                previewTimer.Start();
             }
             else
             {
-                previewThread = null;
+                previewTimer.Stop();
+                previewTimer = null;
             }
         }
 

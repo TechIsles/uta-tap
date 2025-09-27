@@ -273,8 +273,10 @@ namespace editor
 
             if (page != null)
             {
+                PageContainer.Children.Clear();
                 page.OnSelectedMediaChangedInvoke(null);
                 page.OnCloseInvoke();
+                page = null;
             }
             loadedMedias.Clear();
             MediaList_SelectionChanged(null, null);
@@ -288,7 +290,6 @@ namespace editor
             hasEdit = false;
             RefreshTitle();
             RefreshProjectButtonStates();
-            PageContainer.Children.Clear();
             if (json.ContainsKey("tracks"))
             {
                 page = new PageEditTracks(this);
@@ -431,11 +432,11 @@ namespace editor
                 MediaList_SelectionChanged(null, null);
                 MediaList.Items.Clear();
 
+                PageContainer.Children.Clear();
                 if (page != null)
                 {
                     page.OnCloseInvoke();
                 }
-                PageContainer.Children.Clear();
                 page = new PageHome();
                 PageContainer.Children.Add(page);
 
@@ -487,11 +488,11 @@ namespace editor
                 MenuViewSinger.Icon = TryFindResource("CheckIcon");
                 if (page is PageEditSinger) return;
                 
+                PageContainer.Children.Clear();
                 if (page != null)
                 {
                     page.OnCloseInvoke();
                 }
-                PageContainer.Children.Clear();
                 page = new PageEditSinger(this);
                 PageContainer.Children.Add(page);
             }
@@ -510,11 +511,11 @@ namespace editor
                 MenuViewTrack.Icon = TryFindResource("CheckIcon");
                 if (page is PageEditTracks) return;
 
+                PageContainer.Children.Clear();
                 if (page != null)
                 {
                     page.OnCloseInvoke();
                 }
-                PageContainer.Children.Clear();
                 page = new PageEditTracks(this);
                 PageContainer.Children.Add(page);
             }
@@ -667,7 +668,9 @@ namespace editor
             {
                 if (page != null)
                 {
+                    PageContainer.Children.Clear();
                     page.OnCloseInvoke();
+                    page = null;
                 }
                 return;
             }
