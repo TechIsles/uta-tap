@@ -56,7 +56,7 @@ namespace editor
             }
             InitializeComponent();
             Icon = new BitmapImage(new Uri("pack://application:,,,/editor;component/favicon.ico", UriKind.Absolute));
-            Title = windowTitle;
+            RefreshTitle();
             json["media"] = new JsonObject();
             json["volume"] = new JsonObject();
         }
@@ -64,10 +64,20 @@ namespace editor
         public void MarkEdit()
         {
             hasEdit = true;
-            if (!Title.EndsWith('*'))
+            RefreshTitle();
+        }
+
+        public void RefreshTitle()
+        {
+            var sb = new StringBuilder();
+            sb.Append(windowTitle);
+            if (!string.IsNullOrEmpty(openFileName))
             {
-                Title += "*";
+                sb.Append(" - ");
+                sb.Append(new FileInfo(openFileName).Name);
+                if (hasEdit) sb.Append('*');
             }
+            Title = sb.ToString();
         }
 
         private async void ReplaceMedia_Click(object sender, RoutedEventArgs e)
@@ -224,7 +234,8 @@ namespace editor
                         byte[] audio = ReadBase64Audio(media[item].ToString());
                         AddMedia(item, audio);
                     }
-                    Title = windowTitle + " - " + new FileInfo(openFileName).Name;
+                    hasEdit = false;
+                    RefreshTitle();
                     PageContainer.Children.Clear();
                     if (json.ContainsKey("tracks"))
                     {
@@ -304,6 +315,8 @@ namespace editor
                 MessageBox.Show(desc, title, MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+            hasEdit = false;
+            RefreshTitle();
             if (page is PageEditTracks pet)
             {
                 pet.FillTracksNotes();
