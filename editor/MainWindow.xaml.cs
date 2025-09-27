@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Windows;
@@ -220,56 +221,68 @@ namespace editor
             };
             if (ofd.ShowDialog() == true)
             {
-                try
-                {
-                    if (page != null)
-                    {
-                        page.OnSelectedMediaChangedInvoke(null);
-                    }
-                    openFileName = ofd.FileName;
-                    string jsonText = await File.ReadAllTextAsync(openFileName, UTF8);
-                    json = JsonDocument.FromString(jsonText).Object;
-                    if (json == null)
-                    {
-                        MessageBox.Show("文件格式错误，无法解析为 JsonObject", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-                    if (!json.ContainsKey("media") || !json["media"].IsObject())
-                    {
-                        MessageBox.Show("文件格式错误，无法在 JSON 中找到 media", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-                    loadedMedias.Clear();
-                    MediaList_SelectionChanged(null, null);
-                    MediaList.Items.Clear();
-                    var media = json["media"].ToObject();
-                    foreach (var item in media.Keys)
-                    {
-                        byte[] audio = ReadBase64Audio(media[item].ToString());
-                        AddMedia(item, audio);
-                    }
-                    hasEdit = false;
-                    RefreshTitle();
-                    PageContainer.Children.Clear();
-                    if (json.ContainsKey("tracks"))
-                    {
-                        page = new PageEditTracks(this);
-                        MenuViewTrack.Icon = TryFindResource("CheckIcon");
-                    }
-                    else
-                    {
-                        page = new PageEditSinger(this);
-                        MenuViewSinger.Icon = TryFindResource("CheckIcon");
-                    }
-                    PageContainer.Children.Add(page);
-                }
-                catch (Exception ex)
-                {
-                    var title = "错误";
-                    var desc = "打开文件失败：" + ex.Message;
-                    MessageBox.Show(desc, title, MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                await OpenFile(ofd.FileName);
             }
+        }
+
+        public async Task OpenFile(string openFileName)
+        {
+            try
+            {
+                string jsonText = await File.ReadAllTextAsync(openFileName, UTF8);
+                var json = JsonDocument.FromString(jsonText).Object;
+                if (json == null)
+                {
+                    MessageBox.Show("文件格式错误，无法解析为 JsonObject", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                if (!json.ContainsKey("media") || !json["media"].IsObject())
+                {
+                    MessageBox.Show("文件格式错误，无法在 JSON 中找到 media", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                OpenFile(openFileName, json);
+            }
+            catch (Exception ex)
+            {
+                var title = "错误";
+                var desc = "打开文件失败：" + ex.Message;
+                MessageBox.Show(desc, title, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public void OpenFile(string openFileName, JsonObject json)
+        {
+            this.openFileName = openFileName;
+            this.json = json;
+
+            if (page != null)
+            {
+                page.OnSelectedMediaChangedInvoke(null);
+            }
+            loadedMedias.Clear();
+            MediaList_SelectionChanged(null, null);
+            MediaList.Items.Clear();
+            var media = json["media"].ToObject();
+            foreach (var item in media.Keys)
+            {
+                byte[] audio = ReadBase64Audio(media[item].ToString());
+                AddMedia(item, audio);
+            }
+            hasEdit = false;
+            RefreshTitle();
+            PageContainer.Children.Clear();
+            if (json.ContainsKey("tracks"))
+            {
+                page = new PageEditTracks(this);
+                MenuViewTrack.Icon = TryFindResource("CheckIcon");
+            }
+            else
+            {
+                page = new PageEditSinger(this);
+                MenuViewSinger.Icon = TryFindResource("CheckIcon");
+            }
+            PageContainer.Children.Add(page);
         }
         private void AddMedia(string name, byte[] audio)
         {
@@ -565,6 +578,44 @@ namespace editor
                 {
                     OnClickItem(item);
                 }
+            }
+        }
+
+        private void Window_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effects = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+        }
+
+        private void Window_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effects = DragDropEffects.Copy;
+                e.Handled = true;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+        }
+
+        private async void Window_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetData(DataFormats.FileDrop) is string[] filePaths)
+            {
+                if (filePaths.Length != 1)
+                {
+                    MessageBox.Show("只允许拖入一个文件");
+                    return;
+                }
+                await OpenFile(filePaths[0]);
             }
         }
     }
