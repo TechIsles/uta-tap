@@ -15,9 +15,14 @@ namespace editor
     public class EditorPage : UserControl
     {
         public event EventHandler<string> OnSelectedMediaChanged;
+        public event EventHandler<string> OnMediaClick;
         public void OnSelectedMediaChangedInvoke(string media)
         {
             OnSelectedMediaChanged?.Invoke(this, media);
+        }
+        public void OnMediaClickInvoke(string media)
+        {
+            OnMediaClick?.Invoke(this, media);
         }
     }
     public partial class MainWindow : Window
@@ -245,7 +250,11 @@ namespace editor
             };
             item.PreviewMouseLeftButtonDown += (sender, e) =>
             {
-                if (item.IsSelected) OnClickItem(item);
+                if (item.IsSelected)
+                {
+                    OnClickItem(item);
+                    page?.OnMediaClickInvoke(name);
+                }
             };
             MediaList.Items.Add(item);
             loadedMedias[name] = audio;
@@ -290,6 +299,11 @@ namespace editor
                 var title = "错误";
                 var desc = "保存文件失败：" + ex.Message;
                 MessageBox.Show(desc, title, MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (page is PageEditTracks pet)
+            {
+                pet.FillTracksNotes();
             }
         }
 
@@ -342,18 +356,16 @@ namespace editor
                 ButtonReplaceMedia.IsEnabled = true;
                 OnClickItem(item);
                 var selected = item.Tag?.ToString();
-                if (selected != null && page != null)
+                if (selected != null)
                 {
-                    page.OnSelectedMediaChangedInvoke(selected);
+                    page?.OnSelectedMediaChangedInvoke(selected);
+                    page?.OnMediaClickInvoke(selected);
                 }
             }
             else
             {
                 ButtonReplaceMedia.IsEnabled = false;
-                if (page != null)
-                {
-                    page.OnSelectedMediaChangedInvoke(null);
-                }
+                page?.OnSelectedMediaChangedInvoke(null);
             }
         }
 
@@ -398,6 +410,27 @@ namespace editor
                 throw new FormatException("无效的 base64 音频格式，未找到 base64 标识");
             string base64Data = base64Audio.Substring(index + 7);
             return Convert.FromBase64String(base64Data);
+        }
+
+        public void SelectMedia(string name)
+        {
+            foreach (var item in MediaList.Items)
+            {
+                if (item is ListViewItem listViewItem && listViewItem.Tag?.ToString() == name)
+                {
+                    if (MediaList.SelectedItem == listViewItem)
+                    {
+                        OnClickItem(listViewItem);
+                    }
+                    else
+                    {
+                        MediaList.SelectedItem = listViewItem;
+                        listViewItem.Focus();
+                        listViewItem.BringIntoView();
+                    }
+                    return;
+                }
+            }
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)

@@ -280,6 +280,15 @@ namespace CsharpJson
 		{
 			return this.arrylist[index];
 		}
+
+        public List<T> ToList<T>(Func<JsonValue, T> func)
+        {
+            List<T> list = new List<T>();
+            foreach (var item in this.arrylist)
+            {
+                list.Add(func(item));
+            }
+            return list;
+        }
     }
 }
-
