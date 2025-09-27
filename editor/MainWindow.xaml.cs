@@ -40,7 +40,7 @@ namespace editor
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             PropertyNameCaseInsensitive = true,
         };
-        private string windowTitle = "[ uta-tap Editor ]";
+        private string windowTitle = $"[ uta-tap Editor {App.VersionString} ]";
         EditorPage page;
         string openFileName;
         public JsonObject json = new JsonObject();
@@ -461,7 +461,7 @@ namespace editor
             var url = "https://github.com/MrXiaoM/uta-tap";
             var desc = string.Join("\n", [
                 "uta-tap Editor",
-                $"版本 - {App.VERSION}",
+                $"版本 - {App.VersionString}",
                 "作者 - MrXiaoM",
                 "",
                 "是否查看开源地址？",
