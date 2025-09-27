@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using NAudio.Wave;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -250,10 +251,12 @@ namespace editor
                     if (json.ContainsKey("tracks"))
                     {
                         page = new PageEditTracks(this);
+                        MenuViewTrack.Icon = TryFindResource("CheckIcon");
                     }
                     else
                     {
                         page = new PageEditSinger(this);
+                        MenuViewSinger.Icon = TryFindResource("CheckIcon");
                     }
                     PageContainer.Children.Add(page);
                 }
@@ -339,6 +342,44 @@ namespace editor
             if (CheckSafeToExit())
             {
                 Close();
+            }
+        }
+
+        private void MenuViewSinger_Click(object sender, RoutedEventArgs e)
+        {
+            if (page != null)
+            {
+                MenuViewTrack.Icon = null;
+                MenuViewSinger.Icon = TryFindResource("CheckIcon");
+                if (page is PageEditSinger) return;
+
+                PageContainer.Children.Clear();
+                page = new PageEditSinger(this);
+                PageContainer.Children.Add(page);
+            }
+            else
+            {
+                MenuViewSinger.Icon = null;
+                MenuViewTrack.Icon = null;
+            }
+        }
+
+        private void MenuViewTrack_Click(object sender, RoutedEventArgs e)
+        {
+            if (page != null)
+            {
+                MenuViewSinger.Icon = null;
+                MenuViewTrack.Icon = TryFindResource("CheckIcon");
+                if (page is PageEditTracks) return;
+
+                PageContainer.Children.Clear();
+                page = new PageEditTracks(this);
+                PageContainer.Children.Add(page);
+            }
+            else
+            {
+                MenuViewSinger.Icon = null;
+                MenuViewTrack.Icon = null;
             }
         }
 
