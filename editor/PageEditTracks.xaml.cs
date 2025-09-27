@@ -260,7 +260,7 @@ namespace editor
         }
     }
     /// <summary>
-    /// PageEditSinger.xaml 的交互逻辑
+    /// PageEditTracks.xaml 的交互逻辑
     /// </summary>
     public partial class PageEditTracks : EditorPage
     {
