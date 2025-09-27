@@ -33,8 +33,10 @@
             </Grid>
 
             <Grid Grid.Row="1" Margin="0,0,5,0">
-                <ScrollViewer x:Name="ScrollLeft" Background="#EFEFEF" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" ScrollChanged="ScrollLeft_ScrollChanged">
-                    <StackPanel x:Name="ScrollLeftContent"></StackPanel>
+                <ScrollViewer x:Name="ScrollLeft" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Hidden" ScrollChanged="ScrollLeft_ScrollChanged">
+                    <StackPanel x:Name="ScrollLeftContent" Background="#EFEFEF">
+                        <Grid Height="40"/>
+                    </StackPanel>
                 </ScrollViewer>
                 <Grid Background="#E0E0E0" VerticalAlignment="Bottom" Height="20">
                     <Button Click="ButtonAddTrack_Click">增加音轨</Button>
@@ -43,7 +45,9 @@
             <GridSplitter Grid.Row="1" HorizontalAlignment="Right" Width="5" Background="#E0E0E0" Cursor="SizeWE" />
             <Grid Grid.Row="1" Grid.Column="1">
                 <ScrollViewer x:Name="ScrollRight" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" ScrollChanged="ScrollRight_ScrollChanged" PreviewMouseWheel="ScrollRight_PreviewMouseWheel">
-                    <StackPanel x:Name="ScrollRightContent" MouseDown="ScrollRightContent_MouseDown" Background="#808080"></StackPanel>
+                    <StackPanel x:Name="ScrollRightContent" MouseDown="ScrollRightContent_MouseDown" Background="#808080">
+                        <Grid Height="40"/>
+                    </StackPanel>
                 </ScrollViewer>
             </Grid>
 

@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Xml.Linq;
 
 namespace editor
 {
@@ -67,7 +66,7 @@ namespace editor
         public void UpdateBackgroundByIndex(int index)
         {
             left.Background = hex(index % 2 == 1 ? "#EAEAEA" : "#EFEFEF");
-            right.Background = hex(index % 2 == 1 ? "#7B7B7B" : "#808080");
+            right.Background = hex(index % 2 == 1 ? "#6B6B6B" : "#808080");
         }
 
         private void SetupLeftContextMenu(Grid grid, TextBlock textTrackName)
@@ -139,7 +138,7 @@ namespace editor
                 Width = 25,
                 Height = 20,
                 Margin = new Thickness(1, 0, 1, 0),
-                Background = hex("#AAAAAA"),
+                Background = hex("#60EFEFEF"),
                 Cursor = Cursors.Hand,
             };
             grid.MouseLeftButtonDown += (o, e) =>
@@ -223,11 +222,11 @@ namespace editor
                     }
                     if (index <= lastRealNote)
                     {
-                        grid.Background = hex("#BFBFBF");
+                        grid.Background = hex("#90EFEFEF");
                         continue;
                     }
                 }
-                grid.Background = hex("#AAAAAA");
+                grid.Background = hex("#60EFEFEF");
             }
         }
 
