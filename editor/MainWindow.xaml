@@ -29,6 +29,8 @@
                 <Separator/>
                 <MenuItem Header="查看 JSON (_C)" Click="MenuFileJson_Click"/>
                 <Separator/>
+                <MenuItem Header="关闭 (_X)" Click="MenuFileClose_Click"/>
+                <Separator/>
                 <MenuItem Header="退出 (_E)" Click="MenuFileExit_Click"/>
             </MenuItem>
             <MenuItem Header="视图 (_V)">

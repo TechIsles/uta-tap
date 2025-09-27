@@ -32,7 +32,8 @@ namespace editor
     {
         private static MainWindow instance;
         public static MainWindow Instance => instance;
-        private System.Text.Json.JsonSerializerOptions jsonSerializerOptions = new System.Text.Json.JsonSerializerOptions
+        private static readonly Encoding UTF8 = new UTF8Encoding(false);
+        private static readonly System.Text.Json.JsonSerializerOptions jsonSerializerOptions = new System.Text.Json.JsonSerializerOptions
         {
             WriteIndented = true,
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -40,7 +41,6 @@ namespace editor
         };
         private string windowTitle = "[ uta-tap Editor ]";
         EditorPage page;
-        Encoding UTF8 = new UTF8Encoding(false);
         string openFileName;
         public JsonObject json = new JsonObject();
         Dictionary<string, byte[]> loadedMedias = new Dictionary<string, byte[]>();
@@ -337,6 +337,32 @@ namespace editor
             if (page is PageEditTracks pet)
             {
                 pet.FillTracksNotes();
+            }
+        }
+
+        private void MenuFileClose_Click(object sender, RoutedEventArgs e)
+        {
+            if (CheckSafeToExit())
+            {
+                openFileName = null;
+                json = new()
+                {
+                    ["media"] = new JsonObject(),
+                    ["volume"] = new JsonObject()
+                };
+                loadedMedias.Clear();
+                MediaList_SelectionChanged(null, null);
+                MediaList.Items.Clear();
+
+                PageContainer.Children.Clear();
+                page = new PageHome();
+                PageContainer.Children.Add(page);
+
+                MenuViewSinger.Icon = null;
+                MenuViewTrack.Icon = null;
+
+                hasEdit = false;
+                RefreshTitle();
             }
         }
 
