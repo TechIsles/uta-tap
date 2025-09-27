@@ -25,12 +25,12 @@
         <Menu>
             <MenuItem Header="文件 (_F)">
                 <MenuItem Header="打开 (_O)" Click="MenuFileOpen_Click"/>
-                <MenuItem Header="保存 (_S)" Click="MenuFileSave_Click"/>
-                <MenuItem Header="另存为 (_A)" Click="MenuFileSaveAs_Click"/>
+                <MenuItem Name="MenuFileSave" Header="保存 (_S)" Click="MenuFileSave_Click"/>
+                <MenuItem Name="MenuFileSaveAs" Header="另存为 (_A)" Click="MenuFileSaveAs_Click"/>
                 <Separator/>
-                <MenuItem Header="查看 JSON (_C)" Click="MenuFileJson_Click"/>
+                <MenuItem Name="MenuFileJson" Header="查看 JSON (_C)" Click="MenuFileJson_Click"/>
                 <Separator/>
-                <MenuItem Header="关闭 (_X)" Click="MenuFileClose_Click"/>
+                <MenuItem Name="MenuFileClose" Header="关闭 (_X)" Click="MenuFileClose_Click"/>
                 <Separator/>
                 <MenuItem Header="退出 (_E)" Click="MenuFileExit_Click"/>
             </MenuItem>
@@ -61,9 +61,9 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center">资源</TextBlock>
-                    <Button x:Name="ButtonReplaceMedia" Grid.Column="1" Width="35" Height="20" Margin="5,0,0,0" IsEnabled="False" Click="ReplaceMedia_Click">替换</Button>
-                    <Button Grid.Column="2" Width="25" Height="20" Margin="5,0,0,0" Click="AddMedia_Click">+</Button>
-                    <Button Grid.Column="3" Width="25" Height="20" Margin="5,0,0,0" Click="DelMedia_Click">-</Button>
+                    <Button Name="ButtonReplaceMedia" Grid.Column="1" Width="35" Height="20" Margin="5,0,0,0" IsEnabled="False" Click="ReplaceMedia_Click">替换</Button>
+                    <Button Name="ButtonAddMedia" Grid.Column="2" Width="25" Height="20" Margin="5,0,0,0" Click="AddMedia_Click">+</Button>
+                    <Button Name="ButtonDelMedia" Grid.Column="3" Width="25" Height="20" Margin="5,0,0,0" Click="DelMedia_Click">-</Button>
                 </Grid>
                 <ListView x:Name="MediaList" Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionChanged="MediaList_SelectionChanged" KeyDown="MediaList_KeyDown" />
                 <Grid Grid.Row="2" Margin="0,5,0,0">

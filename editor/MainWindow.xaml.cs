@@ -56,6 +56,7 @@ namespace editor
             InitializeComponent();
             Icon = new BitmapImage(new Uri("pack://application:,,,/editor;component/favicon.ico", UriKind.Absolute));
             RefreshTitle();
+            RefreshProjectButtonStates();
             json["media"] = new JsonObject();
             json["volume"] = new JsonObject();
         }
@@ -136,6 +137,7 @@ namespace editor
         }
         private async void AddMedia_Click(object sender, RoutedEventArgs e)
         {
+            if (openFileName == null) return;
             var ofd = new OpenFileDialog()
             {
                 Title = "选择一个要添加到资源中的音频文件",
@@ -188,6 +190,7 @@ namespace editor
         }
         private void DelMedia_Click(object sender, RoutedEventArgs e)
         {
+            if (openFileName == null) return;
             if (MediaList.SelectedItem is ListBoxItem item)
             {
                 var selected = item.Tag?.ToString();
@@ -271,6 +274,7 @@ namespace editor
             }
             hasEdit = false;
             RefreshTitle();
+            RefreshProjectButtonStates();
             PageContainer.Children.Clear();
             if (json.ContainsKey("tracks"))
             {
@@ -305,10 +309,12 @@ namespace editor
         }
         private void MenuFileSave_Click(object sender, RoutedEventArgs e)
         {
+            if (openFileName == null) return;
             SaveTo(openFileName);
         }
         private void MenuFileSaveAs_Click(object sender, RoutedEventArgs e)
         {
+            if (openFileName == null) return;
             var sfd = new SaveFileDialog
             {
                 Title = "音轨/歌姬文件另存为",
@@ -355,6 +361,7 @@ namespace editor
 
         private void MenuFileClose_Click(object sender, RoutedEventArgs e)
         {
+            if (openFileName == null) return;
             if (CheckSafeToExit())
             {
                 openFileName = null;
@@ -376,6 +383,33 @@ namespace editor
 
                 hasEdit = false;
                 RefreshTitle();
+                RefreshProjectButtonStates();
+            }
+        }
+
+        private void RefreshProjectButtonStates()
+        {
+            bool enable = openFileName != null;
+            UIElement[] elements = {
+                MenuFileSave, MenuFileSaveAs, MenuFileJson, MenuFileClose,
+                MenuViewSinger, MenuViewTrack, ButtonAddMedia
+            };
+            foreach (var item in elements)
+            {
+                item.IsEnabled = enable;
+            }
+            RefreshMediaButtonStates(enable);
+        }
+
+        private void RefreshMediaButtonStates(bool projectEnable)
+        {
+            var enable = projectEnable && MediaList.SelectedItem is ListViewItem;
+            UIElement[] elements = {
+                ButtonReplaceMedia, ButtonDelMedia
+            };
+            foreach (var item in elements)
+            {
+                item.IsEnabled = enable;
             }
         }
 
@@ -389,7 +423,7 @@ namespace editor
 
         private void MenuViewSinger_Click(object sender, RoutedEventArgs e)
         {
-            if (page != null)
+            if (page != null && openFileName != null)
             {
                 MenuViewTrack.Icon = null;
                 MenuViewSinger.Icon = TryFindResource("CheckIcon");
@@ -408,7 +442,7 @@ namespace editor
 
         private void MenuViewTrack_Click(object sender, RoutedEventArgs e)
         {
-            if (page != null)
+            if (page != null && openFileName != null)
             {
                 MenuViewSinger.Icon = null;
                 MenuViewTrack.Icon = TryFindResource("CheckIcon");
@@ -461,9 +495,9 @@ namespace editor
 
         private void MediaList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            RefreshProjectButtonStates();
             if (MediaList.SelectedItem is ListViewItem item)
             {
-                ButtonReplaceMedia.IsEnabled = true;
                 OnClickItem(item);
                 var selected = item.Tag?.ToString();
                 if (selected != null)
@@ -474,7 +508,6 @@ namespace editor
             }
             else
             {
-                ButtonReplaceMedia.IsEnabled = false;
                 page?.OnSelectedMediaChangedInvoke(null);
             }
         }
