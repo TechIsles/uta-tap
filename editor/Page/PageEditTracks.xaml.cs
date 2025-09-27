@@ -315,14 +315,17 @@ namespace editor
                     }
                 }
             };
-            var tracks = mainWindow.json["tracks"].ToArray();
-            for (int i = 0; i < tracks.Count; i++)
+            var tracks = mainWindow.json["tracks"]?.ToArray();
+            if (tracks != null)
             {
-                var track = tracks[i].ToObject();
-                var comment = track["comment"]?.ToString() ?? ("Track" + (i + 1));
-                var loop = track["loop"]?.ToBool() ?? false;
-                var notes = track["notes"].ToArray().ToList(v => v.ToInt());
-                AddTrack(i, comment, loop, notes);
+                for (int i = 0; i < tracks.Count; i++)
+                {
+                    var track = tracks[i].ToObject();
+                    var comment = track["comment"]?.ToString() ?? ("Track" + (i + 1));
+                    var loop = track["loop"]?.ToBool() ?? false;
+                    var notes = track["notes"].ToArray().ToList(v => v.ToInt());
+                    AddTrack(i, comment, loop, notes);
+                }
             }
             FillTracksNotes();
         }
@@ -443,7 +446,7 @@ namespace editor
             if (inputValue == null) return;
             var value = Convert.ToDouble(inputValue);
             var oldBPM = mainWindow.json["bpm"];
-            if (oldBPM.IsNumber() && oldBPM.ToDouble() == value) return;
+            if (oldBPM?.IsNumber() == true && oldBPM.ToDouble() == value) return;
             mainWindow.json["bpm"] = value;
             mainWindow.MarkEdit();
         }
