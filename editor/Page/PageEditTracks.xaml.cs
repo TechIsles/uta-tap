@@ -642,6 +642,14 @@ namespace editor
                 previewProgress = ((int)e.NewValue) % previewLength;
                 PlayPreviewFrame(previewProgress);
             }
+            else
+            {
+                int progress = ((int)e.NewValue) % previewLength;
+                if (progress != previewProgress)
+                {
+                    previewProgress = progress;
+                }
+            }
         }
     }
 }
