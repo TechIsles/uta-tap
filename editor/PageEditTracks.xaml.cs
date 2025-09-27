@@ -86,9 +86,12 @@ namespace editor
                     item.selectedIndex = -1;
                     item.RefreshBackgroundColor();
                 }
-                SetNote(noteIndex, -1);
-                parent.SaveTracks();
-                parent.mainWindow.MarkEdit();
+                if (notes[noteIndex] != -1)
+                {
+                    SetNote(noteIndex, -1);
+                    parent.SaveTracks();
+                    parent.mainWindow.MarkEdit();
+                }
                 e.Handled = true;
             };
             if (note >= 0)
