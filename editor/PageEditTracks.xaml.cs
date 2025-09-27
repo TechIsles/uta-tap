@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Xml.Linq;
 
 namespace editor
 {
@@ -279,17 +280,22 @@ namespace editor
                 var comment = track["comment"]?.ToString() ?? ("Track" + (i + 1));
                 var loop = track["loop"]?.ToBool() ?? false;
                 var notes = track["notes"].ToArray().ToList(v => v.ToInt());
-                this.tracks.Add(new MusicTrack(this, ScrollLeftContent, ScrollRightContent, i, comment, loop, notes, (track, noteIndex) =>
-                {
-                    var note = track.notes[noteIndex];
-                    if (note > -1)
-                    {
-                        var mediaName = note + ".mp3";
-                        mainWindow.SelectMedia(mediaName);
-                    }
-                }));
+                AddTrack(i, comment, loop, notes);
             }
             FillTracksNotes();
+        }
+
+        public void AddTrack(int index, string comment, bool loop, List<int> notes)
+        {
+            this.tracks.Add(new MusicTrack(this, ScrollLeftContent, ScrollRightContent, index, comment, loop, notes, (track, noteIndex) =>
+            {
+                var note = track.notes[noteIndex];
+                if (note > -1)
+                {
+                    var mediaName = note + ".mp3";
+                    mainWindow.SelectMedia(mediaName);
+                }
+            }));
         }
 
         public void SaveTracks()
@@ -404,11 +410,35 @@ namespace editor
         private void ScrollRightContent_MouseDown(object sender, MouseButtonEventArgs e)
         {
             // 点击空白处取消选择
-            foreach (var item in tracks)
+            foreach (var track in tracks)
             {
-                item.selectedIndex = -1;
-                item.RefreshBackgroundColor();
+                track.selectedIndex = -1;
+                track.RefreshBackgroundColor();
             }
+        }
+
+        private void ButtonAddTrack_Click(object sender, RoutedEventArgs e)
+        {
+            var max = 0;
+            foreach (var track in tracks)
+            {
+                if (track.notes.Count > max) max = track.notes.Count;
+            }
+            var i = tracks.Count;
+            var comment = "Track" + (i + 1);
+            var loop = false;
+            var notes = new List<int>();
+            for (int j = 0; j < max; j++)
+            {
+                notes.Add(-1);
+            }
+            AddTrack(i, comment, loop, notes);
+            foreach (var track in tracks)
+            {
+                track.selectedIndex = -1;
+                track.RefreshBackgroundColor();
+            }
+            mainWindow.MarkEdit();
         }
     }
 }
