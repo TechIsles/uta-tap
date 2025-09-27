@@ -30,6 +30,8 @@ namespace editor
     }
     public partial class MainWindow : Window
     {
+        private static MainWindow instance;
+        public static MainWindow Instance => instance;
         private System.Text.Json.JsonSerializerOptions jsonSerializerOptions = new System.Text.Json.JsonSerializerOptions
         {
             WriteIndented = true,
@@ -45,6 +47,7 @@ namespace editor
         bool hasEdit = false;
         public MainWindow()
         {
+            instance = this;
             // 播放一次示例音频 (808 鼓机的 hihat)，避免第一次播放时出现卡顿
             string name = Assembly.GetExecutingAssembly().GetName().Name + ".sample.mp3";
             Assembly assembly = Assembly.GetExecutingAssembly();
