@@ -14,7 +14,10 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="36" Foreground="#808080" Margin="0,0,0,5">未打开文件</TextBlock>
-            <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="14" Foreground="#232323">在左上角“文件”处打开歌姬/音轨配置</TextBlock>
+            <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="14" Foreground="#232323" TextAlignment="Center">
+                在左上角“文件”处打开歌姬/音轨配置<LineBreak/>
+                或直接拖入文件
+            </TextBlock>
         </Grid>
     </Grid>
 </local:EditorPage>
