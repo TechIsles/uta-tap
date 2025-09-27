@@ -81,7 +81,7 @@ namespace editor
                 {
                     comment = dialog.TrackName;
                     textTrackName.Text = comment;
-                    parent.mainWindow.MarkEdit();
+                    parent.SaveTracks();
                 }
             };
             var itemDelete = new MenuItem() { Header = "删除音轨" };
@@ -92,7 +92,7 @@ namespace editor
                 if (MessageBox.Show(desc, title, MessageBoxButton.YesNo, MessageBoxImage.Hand) == MessageBoxResult.Yes)
                 {
                     parent.DeleteTrack(this);
-                    parent.mainWindow.MarkEdit();
+                    parent.SaveTracks();
                 }
             };
             ctx.Items.Add(itemRename);
@@ -118,7 +118,6 @@ namespace editor
                 {
                     this.loop = true;
                     parent.SaveTracks();
-                    parent.mainWindow.MarkEdit();
                 }
             };
             check.Unchecked += (o, e) =>
@@ -127,7 +126,6 @@ namespace editor
                 {
                     this.loop = false;
                     parent.SaveTracks();
-                    parent.mainWindow.MarkEdit();
                 }
             };
             return check;
@@ -496,7 +494,7 @@ namespace editor
                 track.selectedIndex = -1;
                 track.RefreshBackgroundColor();
             }
-            mainWindow.MarkEdit();
+            SaveTracks();
         }
     }
 }
