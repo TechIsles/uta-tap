@@ -1,8 +1,11 @@
 ﻿using CsharpJson;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace editor
 {
@@ -195,7 +198,7 @@ namespace editor
             }
         }
 
-        public void RefreshBackgroundColor()
+        public int GetLastRealNoteIndex()
         {
             var changed = false;
             var lastRealNote = notes.Count - 1;
@@ -208,7 +211,12 @@ namespace editor
                     break;
                 }
             }
-            if (!changed) lastRealNote = -1;
+            return changed ? lastRealNote : -1;
+        }
+
+        public void RefreshBackgroundColor()
+        {
+            var lastRealNote = GetLastRealNoteIndex();
             for (int i = 0; i < noteGrids.Count; i++)
             {
                 var grid = noteGrids[i];
@@ -235,18 +243,7 @@ namespace editor
             obj["comment"] = comment;
             obj["loop"] = loop;
 
-            var changed = false;
-            var lastRealNote = this.notes.Count - 1;
-            for (int index = lastRealNote; index >= 0; index--)
-            {
-                if (this.notes[index] > -1)
-                {
-                    lastRealNote = index;
-                    changed = true;
-                    break;
-                }
-            }
-            if (!changed) lastRealNote = -1;
+            var lastRealNote = GetLastRealNoteIndex();
             var notes = new JsonArray();
             for (int i = 0; i <= lastRealNote; i++)
             {
@@ -257,18 +254,51 @@ namespace editor
             return obj;
         }
     }
+
+    public class TrackData(int[] notes, float[] volumes)
+    {
+        public readonly int[] notes = notes;
+        public readonly float[] volumes = volumes;
+    }
+
     /// <summary>
     /// PageEditTracks.xaml 的交互逻辑
     /// </summary>
-    public partial class PageEditTracks : EditorPage
+    public partial class PageEditTracks : EditorPage, INotifyPropertyChanged
     {
+        private bool _isPlaying;
+        public bool IsPlaying
+        {
+            get => _isPlaying;
+            set
+            {
+                _isPlaying = value;
+                OnPropertyChanged(nameof(IsPlaying));
+            }
+        }
+
+        // 实现 INotifyPropertyChanged 接口（用于通知UI属性变化）
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         internal List<MusicTrack> tracks = new List<MusicTrack>();
         internal MainWindow mainWindow;
         string selected;
+
+        private List<TrackData> previewTracks;
+        private int previewLength;
+        private int previewProgress;
+        private double previewGapMills;
+        private Thread previewThread;
+
         public PageEditTracks(MainWindow mainWindow)
         {
             this.mainWindow = mainWindow;
             InitializeComponent();
+            DataContext = this;
             OnSelectedMediaChanged += (sender, selected) =>
             {
                 this.selected = selected;
@@ -313,6 +343,11 @@ namespace editor
                     }
                 }
             };
+            OnClose += (sender, e) =>
+            {
+                IsPlaying = false;
+                previewThread = null;
+            };
             var tracks = mainWindow.json["tracks"]?.ToArray();
             if (tracks != null)
             {
@@ -326,6 +361,70 @@ namespace editor
                 }
             }
             FillTracksNotes();
+            BuildPreviewData();
+        }
+
+        public void BuildPreviewData()
+        {
+            int length = 0;
+            foreach (var track in this.tracks)
+            {
+                int lastRealNote = track.GetLastRealNoteIndex() + 1;
+                if (lastRealNote > length) length = lastRealNote;
+            }
+            var volumeJson = (mainWindow.json["volume"] ?? new JsonObject()).ToObject();
+            List<TrackData> tracks = new List<TrackData>();
+            foreach (var track in this.tracks)
+            {
+                int[] notes = new int[length];
+                float[] volumes = new float[length];
+                for (int i = 0; i < length; i++)
+                {
+                    var notesLength = track.GetLastRealNoteIndex() + 1;
+                    var note = track.loop
+                        ? track.notes[i % notesLength]
+                        : i >= notesLength ? -1 : track.notes[i];
+                    var volume = volumeJson == null ? 1.0f
+                        : (float) (volumeJson[note + ".mp3"]?.ToDouble() ?? 1.0d);
+                    notes[i] = note;
+                    volumes[i] = volume;
+                }
+                tracks.Add(new TrackData(notes, volumes));
+            }
+            previewLength = length;
+            previewTracks = tracks;
+            SliderProgress.Maximum = previewLength;
+            SliderProgress.Value = previewProgress % previewLength;
+            UpdatePreviewTime();
+        }
+
+        public void PlayPreviewFrame(int index)
+        {
+            foreach (var track in previewTracks)
+            {
+                int note = track.notes[index];
+                float volume = track.volumes[index];
+                if (note == -1) continue;
+                mainWindow.PlayAudio(note + ".mp3", volume);
+            }
+            UpdatePreviewTime();
+        }
+
+        public void UpdatePreviewTime()
+        {
+            static string ToString(double time)
+            {
+                var minute = (int)Math.Round(time / 60.0);
+                var second = (int)Math.Round(time % 60);
+                return $"{minute:D2}:{second:D2}";
+            }
+            var progress = previewGapMills * previewProgress / 1000.0;
+            var length = previewGapMills * previewLength / 1000.0;
+            var time = $"{ToString(progress)}/{ToString(length)}";
+            if (TextProgress != null)
+            {
+                TextProgress.Text = time;
+            }
         }
 
         public void DeleteTrack(MusicTrack targetTrack)
@@ -362,6 +461,7 @@ namespace editor
             }
             mainWindow.json["tracks"] = tracks;
             mainWindow.MarkEdit();
+            BuildPreviewData();
         }
 
         public void FillTracksNotes()
@@ -444,6 +544,8 @@ namespace editor
             if (inputValue == null) return;
             var value = Convert.ToDouble(inputValue);
             var oldBPM = mainWindow.json["bpm"];
+            previewGapMills = 60000.0 / value / 2.0;
+            UpdatePreviewTime();
             if (oldBPM?.IsNumber() == true && oldBPM.ToDouble() == value) return;
             mainWindow.json["bpm"] = value;
             mainWindow.MarkEdit();
@@ -496,6 +598,50 @@ namespace editor
                 track.RefreshBackgroundColor();
             }
             SaveTracks();
+        }
+
+        private void ButtonPlayPause_Click(object sender, RoutedEventArgs e)
+        {
+            IsPlaying = !IsPlaying;
+            if (IsPlaying)
+            {
+                previewThread = new Thread(() =>
+                {
+                    var stopwatch = new Stopwatch();
+                    while (IsPlaying)
+                    {
+                        stopwatch.Start();
+                        while (IsPlaying && stopwatch.ElapsedMilliseconds < previewGapMills);
+                        if (!IsPlaying) break;
+                        previewProgress = (previewProgress + 1) % previewLength;
+                        Dispatcher.Invoke(() => SliderProgress.Value = previewProgress);
+                        Dispatcher.InvokeAsync(() => PlayPreviewFrame(previewProgress));
+                        stopwatch.Stop();
+                        stopwatch.Reset();
+                    }
+                    stopwatch.Stop();
+                });
+                previewThread.Start();
+            }
+            else
+            {
+                previewThread = null;
+            }
+        }
+
+        private void SliderProgress_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (previewTracks == null || previewLength == 0) return;
+            if (!IsPlaying)
+            {
+                if (e.NewValue >= previewLength)
+                {
+                    SliderProgress.Value = 0;
+                    return;
+                }
+                previewProgress = ((int)e.NewValue) % previewLength;
+                PlayPreviewFrame(previewProgress);
+            }
         }
     }
 }

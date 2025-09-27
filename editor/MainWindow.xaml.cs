@@ -20,6 +20,7 @@ namespace editor
     {
         public event EventHandler<string> OnSelectedMediaChanged;
         public event EventHandler<string> OnMediaClick;
+        public event EventHandler OnClose;
         public void OnSelectedMediaChangedInvoke(string media)
         {
             OnSelectedMediaChanged?.Invoke(this, media);
@@ -27,6 +28,10 @@ namespace editor
         public void OnMediaClickInvoke(string media)
         {
             OnMediaClick?.Invoke(this, media);
+        }
+        public void OnCloseInvoke()
+        {
+            OnClose?.Invoke(this, null);
         }
     }
     public partial class MainWindow : Window
@@ -258,6 +263,7 @@ namespace editor
             if (page != null)
             {
                 page.OnSelectedMediaChangedInvoke(null);
+                page.OnCloseInvoke();
             }
             loadedMedias.Clear();
             MediaList_SelectionChanged(null, null);
@@ -336,6 +342,10 @@ namespace editor
         }
         private void SaveTo(string fileName)
         {
+            if (page != null)
+            {
+                page.OnCloseInvoke();
+            }
             try
             {
                 File.WriteAllText(fileName, SaveToJson(), UTF8);
@@ -370,6 +380,10 @@ namespace editor
                 MediaList_SelectionChanged(null, null);
                 MediaList.Items.Clear();
 
+                if (page != null)
+                {
+                    page.OnCloseInvoke();
+                }
                 PageContainer.Children.Clear();
                 page = new PageHome();
                 PageContainer.Children.Add(page);
@@ -411,10 +425,7 @@ namespace editor
 
         private void MenuFileExit_Click(object sender, RoutedEventArgs e)
         {
-            if (CheckSafeToExit())
-            {
-                Close();
-            }
+            Close();
         }
 
         private void MenuViewSinger_Click(object sender, RoutedEventArgs e)
@@ -424,7 +435,11 @@ namespace editor
                 MenuViewTrack.Icon = null;
                 MenuViewSinger.Icon = TryFindResource("CheckIcon");
                 if (page is PageEditSinger) return;
-
+                
+                if (page != null)
+                {
+                    page.OnCloseInvoke();
+                }
                 PageContainer.Children.Clear();
                 page = new PageEditSinger(this);
                 PageContainer.Children.Add(page);
@@ -444,6 +459,10 @@ namespace editor
                 MenuViewTrack.Icon = TryFindResource("CheckIcon");
                 if (page is PageEditTracks) return;
 
+                if (page != null)
+                {
+                    page.OnCloseInvoke();
+                }
                 PageContainer.Children.Clear();
                 page = new PageEditTracks(this);
                 PageContainer.Children.Add(page);
@@ -588,10 +607,15 @@ namespace editor
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (!CheckSafeToExit())
+            if (CheckSafeToExit())
             {
-                e.Cancel = true;
+                if (page != null)
+                {
+                    page.OnCloseInvoke();
+                }
+                return;
             }
+            e.Cancel = true;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
