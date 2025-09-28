@@ -31,6 +31,7 @@ namespace CsharpJson
     /// </summary>
     public class JsonDocument
     {
+        private static readonly Encoding UTF8 = new UTF8Encoding(false);
         public enum JsonEncoding
         {
             Default,
@@ -202,10 +203,8 @@ namespace CsharpJson
                     return FromString(Encoding.ASCII.GetString(json));
                 case JsonEncoding.Unicode:
                     return FromString(Encoding.Unicode.GetString(json));
-                case JsonEncoding.UTF7:
-                    return FromString(Encoding.UTF7.GetString(json));
                 case JsonEncoding.UTF8:
-                    return FromString(Encoding.UTF8.GetString(json));
+                    return FromString(UTF8.GetString(json));
                 case JsonEncoding.UTF32:
                     return FromString(Encoding.UTF32.GetString(json));
                 case JsonEncoding.BigEndianUnicode:
@@ -261,10 +260,8 @@ namespace CsharpJson
                     return Encoding.ASCII.GetBytes(jsonstr);
                 case JsonEncoding.Unicode:
                     return Encoding.Unicode.GetBytes(jsonstr);
-                case JsonEncoding.UTF7:
-                    return Encoding.UTF7.GetBytes(jsonstr);
                 case JsonEncoding.UTF8:
-                    return Encoding.UTF8.GetBytes(jsonstr);
+                    return UTF8.GetBytes(jsonstr);
                 case JsonEncoding.UTF32:
                     return Encoding.UTF32.GetBytes(jsonstr);
                 case JsonEncoding.BigEndianUnicode:
