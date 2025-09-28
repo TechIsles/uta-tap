@@ -395,7 +395,9 @@ namespace editor
             };
             if (sfd.ShowDialog() == true)
             {
+                openFileName = sfd.FileName;
                 SaveTo(sfd.FileName);
+                RefreshTitle();
             }
         }
         private void MenuFileJson_Click(object sender, RoutedEventArgs e)
