@@ -5,6 +5,7 @@
 ## 已部署站点
 
 + Cloudflare Pages: https://uta-tap.pages.dev/
++ Netlify: https://uta-tap.netlify.app/
 + Vercel (较快): https://vercel.uta.mrxiaom.top/
 + Github Pages (较慢): https://uta.mrxiaom.top/
 
@@ -36,3 +37,4 @@
 
 + [HFIProgramming 全体开发者](https://github.com/HFIProgramming) 制作 Mikutap 汉化
 + [daniwell](https://aidn.jp/) Mikutap 原作者
++ [Cloudflare Pages](https://www.cloudflare-cn.com/developer-platform/products/pages/)、[Netlify](https://www.netlify.com/)、[Vercel](https://vercel.com/)、[Github Pages](https://docs.github.com/zh/pages) 站点部署支持
