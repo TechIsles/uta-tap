@@ -228,11 +228,11 @@ namespace editor
             notes[index] = note;
             var grid = noteGrids[index];
             grid.Children.Clear();
-            if (note != null)
+            if (note != null && note >= 0)
             {
                 grid.Children.Add(new TextBlock()
                 {
-                    Text = note == -1 ? "[]" : note.ToString(),
+                    Text = note.ToString(),
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center,
                 });
