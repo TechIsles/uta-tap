@@ -30,7 +30,7 @@ namespace editor
             OnSelectedMediaChanged += (sender, selected) =>
             {
                 this.selected = selected;
-                if (selected != null)
+                if (selected != null && selected != "-1")
                 {
                     TextMediaName.Text = selected;
                     var json = mainWindow.json;
