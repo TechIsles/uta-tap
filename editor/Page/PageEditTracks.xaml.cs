@@ -32,7 +32,7 @@ namespace editor
         private TextBlock buttonMute;
         public string comment;
         public bool loop;
-        public List<int> notes;
+        public List<int?> notes;
         public bool mute = false;
         internal List<Grid> noteGrids = new List<Grid>();
         internal int selectedIndex = -1;
@@ -40,7 +40,7 @@ namespace editor
         {
             return new SolidColorBrush((Color)ColorConverter.ConvertFromString(s));
         }
-        public MusicTrack(PageEditTracks parent, StackPanel left, StackPanel right, int index, string comment, bool loop, List<int> notes, Action<MusicTrack, int> onSelected)
+        public MusicTrack(PageEditTracks parent, StackPanel left, StackPanel right, int index, string comment, bool loop, List<int?> notes, Action<MusicTrack, int> onSelected)
         {
             this.parent = parent;
             this.onSelected = onSelected;
@@ -173,7 +173,7 @@ namespace editor
             return check;
         }
 
-        public void AddNoteGrid(int noteIndex, int note)
+        public void AddNoteGrid(int noteIndex, int? note)
         {
             var grid = new Grid()
             {
@@ -201,9 +201,9 @@ namespace editor
                     item.selectedIndex = -1;
                     item.RefreshBackgroundColor();
                 }
-                if (notes[noteIndex] != -1)
+                if (notes[noteIndex] != null)
                 {
-                    SetNote(noteIndex, -1);
+                    SetNote(noteIndex, null);
                     RefreshBackgroundColor();
                     parent.SaveTracks();
                     parent.mainWindow.MarkEdit();
@@ -223,20 +223,21 @@ namespace editor
             noteGrids.Add(grid);
         }
 
-        public void SetNote(int index, int note)
+        public void SetNote(int index, int? note)
         {
             notes[index] = note;
             var grid = noteGrids[index];
             grid.Children.Clear();
-            if (note >= 0)
+            if (note != null)
             {
                 grid.Children.Add(new TextBlock()
                 {
-                    Text = note.ToString(),
+                    Text = note == -1 ? "[]" : note.ToString(),
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center,
                 });
             }
+            
         }
 
         public int GetLastRealNoteIndex()
@@ -245,7 +246,7 @@ namespace editor
             var lastRealNote = notes.Count - 1;
             for (int index = lastRealNote; index >= 0; index--)
             {
-                if (notes[index] > -1)
+                if (notes[index] != null)
                 {
                     lastRealNote = index;
                     changed = true;
@@ -289,7 +290,7 @@ namespace editor
             for (int i = 0; i <= lastRealNote; i++)
             {
                 var note = this.notes[i];
-                notes.Add(new JsonValue(note));
+                notes.Add(new JsonValue(note ?? -1));
             }
             obj["notes"] = notes;
             return obj;
@@ -413,6 +414,7 @@ namespace editor
                         if (old != result)
                         {
                             item.SetNote(item.selectedIndex, result);
+                            item.RefreshBackgroundColor();
                             SaveTracks();
                         }
                         break;
@@ -436,7 +438,7 @@ namespace editor
                     var track = tracks[i].ToObject();
                     var comment = track["comment"]?.ToString() ?? ("Track" + (i + 1));
                     var loop = track["loop"]?.ToBool() ?? false;
-                    var notes = track["notes"].ToArray().ToList(v => v.ToInt());
+                    var notes = track["notes"].ToArray().ToList(v => (int?) v.ToInt());
                     AddTrack(i, comment, loop, notes);
                 }
             }
@@ -464,9 +466,9 @@ namespace editor
                     var note = track.loop
                         ? track.notes[i % notesLength]
                         : i >= notesLength ? -1 : track.notes[i];
-                    var volume = volumeJson == null ? 1.0f
+                    var volume = note == null || volumeJson == null ? 1.0f
                         : (float) (volumeJson[note + ".mp3"]?.ToDouble() ?? 1.0d);
-                    notes[i] = note;
+                    notes[i] = note ?? -1;
                     volumes[i] = volume;
                 }
                 tracks.Add(new TrackData(notes, volumes));
@@ -521,15 +523,14 @@ namespace editor
             }
         }
 
-        public void AddTrack(int index, string comment, bool loop, List<int> notes)
+        public void AddTrack(int index, string comment, bool loop, List<int?> notes)
         {
             this.tracks.Add(new MusicTrack(this, ScrollLeftContent, ScrollRightContent, index, comment, loop, notes, (track, noteIndex) =>
             {
                 var note = track.notes[noteIndex];
-                if (note > -1)
+                if (note != null)
                 {
-                    var mediaName = note + ".mp3";
-                    mainWindow.SelectMedia(mediaName);
+                    mainWindow.SelectMedia(note ?? -1);
                 }
             }));
         }
@@ -555,7 +556,7 @@ namespace editor
                 var realNoteLength = item.notes.Count;
                 for (int index = realNoteLength - 1; index >= 0; index--)
                 {
-                    if (item.notes[index] > -1)
+                    if (item.notes[index] != null)
                     {
                         realNoteLength = index + 1;
                         changed = true;
@@ -577,8 +578,8 @@ namespace editor
                     for (int i = 0; i < needCount; i++)
                     {
                         int index = start + i;
-                        track.notes.Add(-1);
-                        track.AddNoteGrid(index, -1);
+                        track.notes.Add(null);
+                        track.AddNoteGrid(index, null);
                     }
                     track.RefreshBackgroundColor();
                 }
@@ -684,10 +685,10 @@ namespace editor
             var i = tracks.Count;
             var comment = "Track" + (i + 1);
             var loop = false;
-            var notes = new List<int>();
+            var notes = new List<int?>();
             for (int j = 0; j < max; j++)
             {
-                notes.Add(-1);
+                notes.Add(null);
             }
             AddTrack(i, comment, loop, notes);
             foreach (var track in tracks)

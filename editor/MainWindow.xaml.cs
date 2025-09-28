@@ -101,7 +101,7 @@ namespace editor
             if (MediaList.SelectedItem is ListViewItem item)
             {
                 var selected = item.Tag?.ToString();
-                if (selected == null) return;
+                if (selected == null || selected == "-1") return;
                 await ReplaceMedia(selected);
             }
             else
@@ -200,7 +200,7 @@ namespace editor
             if (MediaList.SelectedItem is ListViewItem item)
             {
                 var selected = item.Tag?.ToString();
-                if (selected == null) return;
+                if (selected == null || selected == "-1") return;
                 DeleteMedia(selected, item);
             }
             else
@@ -281,6 +281,7 @@ namespace editor
             loadedMedias.Clear();
             MediaList_SelectionChanged(null, null);
             MediaList.Items.Clear();
+            AddEmptyMedia();
             var media = json["media"].ToObject();
             foreach (var item in media.Keys)
             {
@@ -302,6 +303,21 @@ namespace editor
             }
             PageContainer.Children.Add(page);
         }
+
+        private void AddEmptyMedia()
+        {
+            var item = new ListViewItem()
+            {
+                Content = "(空音符)",
+                Tag = "-1",
+            };
+            item.PreviewMouseLeftButtonDown += (sender, e) =>
+            {
+                if (item.IsSelected) page?.OnMediaClickInvoke("-1");
+            };
+            MediaList.Items.Add(item);
+        }
+
         private void AddMedia(string name, byte[] audio)
         {
             var item = new ListViewItem()
@@ -620,6 +636,11 @@ namespace editor
                 throw new FormatException("无效的 base64 音频格式，未找到 base64 标识");
             string base64Data = base64Audio.Substring(index + 7);
             return Convert.FromBase64String(base64Data);
+        }
+
+        public void SelectMedia(int note)
+        {
+            SelectMedia(note == -1 ? "-1" : (note + ".mp3"));
         }
 
         public void SelectMedia(string name)
