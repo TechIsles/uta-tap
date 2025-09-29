@@ -20,6 +20,11 @@ https://uta.mrxiaom.top/?vocal=Warma
 https://uta.mrxiaom.top/?vocal=蒼姫ラピス&tracks=mikutap
 ```
 
+# 编辑配置
+
+> [!TIP]
+> 使用 [可视化编辑器](https://github.com/MrXiaoM/uta-tap/releases/latest) 更方便哦！
+
 ## vocal 歌姬配置文件格式
 
 ```json5
