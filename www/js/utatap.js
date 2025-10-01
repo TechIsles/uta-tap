@@ -122,13 +122,15 @@ var MainManager = function() {
         try {
             aidn.adv.show();
         } catch (n) {}
-        var resolution = window.devicePixelRatio >= 2 ? 2 : 1;
+        var resolution = parseInt(window.devicePixelRatio * 2);
         renderer = PIXI.autoDetectRenderer(windowWidth, windowHeight, {
             backgroundColor: 0xFFAFAF,
-            antialias: false,
             resolution: resolution
         });
         renderer.autoDensity = true;
+        renderer.resolution = resolution;
+        renderer.options.antialias = true;
+        renderer.options.autoDensity = true;
         document.getElementById("view").appendChild(renderer.view);
         renderContainer = new PIXI.Container;
         animatePlayer.init();
